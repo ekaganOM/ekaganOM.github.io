@@ -3,8 +3,8 @@ let passengerID = 1;
 
 //creates the grid layout
 function createGrid(size) {
-    var ratioW = Math.floor($(window).width()/size),
-        ratioH = Math.floor($(window).height()/size);
+    var ratioW = 20, //Math.floor($(window).width()/size)
+        ratioH = 11; //Math.floor($(window).height()/size)
     
     var parent = $('<div />', {
         class: 'grid', 
@@ -29,28 +29,73 @@ $(".grid div:nth-child(1)").append("<img class='car' src='./car.png' alt='Car'>"
 function getLocations(){
     //get two random locations on the grid
     var totalGrids = $(".grid").children().length;
-    var first = Math.floor((Math.random() * totalGrids) + 2);
-    var second = Math.floor((Math.random() * totalGrids) + 2);
 
+    let first = 0, second = 0;
+    //makes sure the location is never on boundary 
+    while (first < 20 || first % 20 < 2 || first > 200) {
+        first = Math.floor((Math.random() * totalGrids) + 2);
+    }
+    while (second < 20 || second % 20 < 2 || second > 200) {
+        second = Math.floor((Math.random() * totalGrids) + 2);
+    }
+
+    //to decide which is pickup and dropoff based on grid number 
+    var firstMod = first % 20;
+    var secondMod = second % 20;
+  
     //gets the DOM element for the two locations
-    var firstCell = $(".grid div:nth-child(" + first + ")");
-    var secondCell = $(".grid div:nth-child(" + second + ")");
+    var pickup = $(".grid div:nth-child(" + (firstMod < secondMod ? first : second) + ")");
+    var dropoff = $(".grid div:nth-child(" + (firstMod < secondMod ? second : first) + ")");
 
     //add the destination image on the two random locations.
-    firstCell.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'>");
-    secondCell.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'>");
+    pickup.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'><strong>Pick up Passenger " + passengerID + "</strong>");
+    dropoff.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'><strong>Drop off Passenger " + passengerID + "</strong>");
 
     passengerID++;
 }
 
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
+}
+
+function countDown() {
+    let countDown = Math.floor((Math.random() * 6) + 5);
+    let countdownText = (countDown == 10 ? countDown : "0" + countDown) + ":00"
+    document.getElementById("time").innerHTML = countdownText;
+
+    var fiveMinutes = 60 * countDown - 1,
+        display = document.querySelector('#time');
+    startTimer(fiveMinutes, display);
+};
+
 setTimeout(() => {
     //first passenger locations after 3 second delay
     getLocations();
-    //after every 20 seconds, add another pair of locations, max 3 in total 
-    var timeout = setInterval(getLocations, 20000)
-    setTimeout(() => clearInterval(timeout), 40000);
+    countDown();
 
+    //after every 20 seconds, possibly add another pair of locations, max 3 in total
+    var numExtraPassengers = Math.floor(Math.random() * 3);
+    var timeout = setInterval(getLocations, 20000);
+    setTimeout(() => clearInterval(timeout), 20000 * numExtraPassengers);
+    console.log(numExtraPassengers)
 }, 3000);
+
+
+
+
 
 
 
