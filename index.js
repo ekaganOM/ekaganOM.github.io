@@ -1,6 +1,9 @@
 //passenger 'ID'
 let passengerID = 1;
 
+//previous timer instance
+let timerInstance;
+
 //creates the grid layout
 function createGrid(size) {
     var ratioW = 20, //Math.floor($(window).width()/size)
@@ -51,12 +54,17 @@ function getLocations(){
     pickup.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'><strong>Pick up Passenger " + passengerID + "</strong>");
     dropoff.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'><strong>Drop off Passenger " + passengerID + "</strong>");
 
+    //update passengerID for the next destination image. 
     passengerID++;
 }
 
-function startTimer(duration, display) {
+//countDown 
+function updateTimer(duration) {
+    var display = display = document.querySelector('#time');
     var timer = duration, minutes, seconds;
-    setInterval(function () {
+
+    clearInterval(timerInstance);
+    timerInstance = setInterval(function () {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -71,14 +79,14 @@ function startTimer(duration, display) {
     }, 1000);
 }
 
+//gets a random time between 5 and 10 minutes and makes a countDown from that time.
 function countDown() {
     let countDown = Math.floor((Math.random() * 6) + 5);
     let countdownText = (countDown == 10 ? countDown : "0" + countDown) + ":00"
     document.getElementById("time").innerHTML = countdownText;
 
-    var fiveMinutes = 60 * countDown - 1,
-        display = document.querySelector('#time');
-    startTimer(fiveMinutes, display);
+    var numSeconds = 60 * countDown - 1;
+    updateTimer(numSeconds);
 };
 
 setTimeout(() => {
@@ -88,7 +96,15 @@ setTimeout(() => {
 
     //after every 20 seconds, possibly add another pair of locations, max 3 in total
     var numExtraPassengers = Math.floor(Math.random() * 3);
-    var timeout = setInterval(getLocations, 20000);
+    var timeout = setInterval(() => {
+        getLocations();
+
+        //get the time remaining and add 3 minutes to it every time a new passenger is added
+        let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 + 
+            parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 180;
+
+        updateTimer(newDuration);
+    }, 20000);
     setTimeout(() => clearInterval(timeout), 20000 * numExtraPassengers);
     console.log(numExtraPassengers)
 }, 3000);
