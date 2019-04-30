@@ -2,7 +2,6 @@ html,
 body {
   height: 100%;
   background-color: white;
-  overflow: hidden;
   padding: 0;
 }
 
@@ -10,12 +9,14 @@ body {
     margin-top: 10px;
     border: 1px solid #ccc;
     border-width: 1px 0 0 1px;
+    position: relative;
 }
 
 .grid div {
     border: 1px solid #ccc;
     border-width: 0 1px 1px 0;
     float: left;
+    text-align: center;
 }
 
 .car {   
@@ -30,4 +31,21 @@ body {
     width: 20px;
     margin-top: 60px;
     margin-left: 60px;
+    z-index: 1;
+    position: relative;
+}
+
+.timer {
+    position: absolute;
+    margin-left: 1261px;
+    background-color: black;
+    z-index: 1;
+    height: 70px;
+    text-align: center;
+    color: white;
+    width: 139px;
+}
+
+.timerText {
+    display: grid;
 }
