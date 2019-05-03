@@ -30,22 +30,28 @@ body {
     height: 20px;
     width: 20px;
     margin-top: 60px;
-    margin-left: 60px;
+    margin-left: 25px;
     z-index: 1;
     position: relative;
 }
 
+.locTag {
+    font-size: smaller;
+}
+
 .timer {
     position: absolute;
-    margin-left: 1261px;
     background-color: black;
     z-index: 1;
     height: 70px;
     text-align: center;
     color: white;
-    width: 139px;
+    width: 211px;
 }
 
 .timerText {
     display: grid;
+    margin: auto;
+    padding-top: 8px;
 }
+
