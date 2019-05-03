@@ -19,11 +19,13 @@ body {
     text-align: center;
 }
 
-.car {   
+#car {   
     height: 35px;
     width: 65px;
     margin-top: 50px;
     margin-left: 2.5px;
+    position: relative;
+    z-index: 2;
 }
 
 .destination {
