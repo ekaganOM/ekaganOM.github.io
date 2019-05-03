@@ -4,11 +4,14 @@ let passengerID = 1;
 //previous timer instance
 let timerInstance;
 
-//creates the grid layout
+//sizeOfGrid 
+let gridSize = 70;
+
+//creates the grid layout of size W x H of screen
 function createGrid(size) {
-    var ratioW = 20, //Math.floor($(window).width()/size)
-        ratioH = 11; //Math.floor($(window).height()/size)
-    
+    var ratioW = Math.floor($(window).width()/size),
+        ratioH = Math.floor($(window).height()/size);
+       
     var parent = $('<div />', {
         class: 'grid', 
         width: ratioW  * size, 
@@ -25,9 +28,17 @@ function createGrid(size) {
     }
 }
 
-createGrid(70);
-//adds the car to the screen
-$(".grid div:nth-child(1)").append("<img class='car' src='./car.png' alt='Car'>")
+// adds car to the centre row of the screen
+function addCar(size) {
+    var width = Math.floor($(window).width()/size);
+    //calculate the middle row for the screen 
+    var height = Math.floor($(window).height()/size);
+    var calcHeight = Math.floor((height/2));
+    var carHeight = (calcHeight % 2 == 0 ? calcHeight-1 : calcHeight);
+
+    var carLocation = (carHeight * width )+ 1; 
+    $(".grid div:nth-child("+ carLocation + ")").append("<img class='car' src='./car.png' alt='Car'>");
+}
 
 function getLocations(){
     //get two random locations on the grid
@@ -51,14 +62,16 @@ function getLocations(){
     var dropoff = $(".grid div:nth-child(" + (firstMod < secondMod ? second : first) + ")");
 
     //add the destination image on the two random locations.
-    pickup.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'><strong>Pick up Passenger " + passengerID + "</strong>");
-    dropoff.append("<img class='destination' src='./d" + passengerID + ".png' alt='Destination'><strong>Drop off Passenger " + passengerID + "</strong>");
+    pickup.append("<img class='destination' src='./d" + passengerID + 
+        ".png' alt='Destination'><strong class= 'locTag' >Pick up Passenger " + passengerID + "</strong>");
+    dropoff.append("<img class='destination' src='./d" + passengerID + 
+        ".png' alt='Destination'><strong class= 'locTag' >Drop off Passenger " + passengerID + "</strong>");
 
     //update passengerID for the next destination image. 
     passengerID++;
 }
 
-//countDown 
+//timer
 function updateTimer(duration) {
     var display = display = document.querySelector('#time');
     var timer = duration, minutes, seconds;
@@ -79,44 +92,34 @@ function updateTimer(duration) {
     }, 1000);
 }
 
-//gets a random time between 5 and 10 minutes and makes a countDown from that time.
+//displays start time from 5 minutes and updates the timer.
 function countDown() {
-    let countDown = Math.floor((Math.random() * 6) + 5);
-    let countdownText = (countDown == 10 ? countDown : "0" + countDown) + ":00"
+    //start the timer from 5 minutes
+    let countDown = 5;
+    let countdownText = countDown + ":00"
     document.getElementById("time").innerHTML = countdownText;
-
     var numSeconds = 60 * countDown - 1;
     updateTimer(numSeconds);
 };
+
+//execution starts here 
+createGrid(gridSize);
+addCar(gridSize);
 
 setTimeout(() => {
     //first passenger locations after 3 second delay
     getLocations();
     countDown();
 
-    //after every 20 seconds, possibly add another pair of locations, max 3 in total
-    var numExtraPassengers = Math.floor(Math.random() * 3);
-    var timeout = setInterval(() => {
-        getLocations();
+    //after 20 seconds, add another pair of locations
+    setTimeout(() => {
 
+        getLocations();
         //get the time remaining and add 3 minutes to it every time a new passenger is added
         let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 + 
             parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 180;
-
         updateTimer(newDuration);
+
     }, 20000);
-    setTimeout(() => clearInterval(timeout), 20000 * numExtraPassengers);
-    console.log(numExtraPassengers)
+
 }, 3000);
-
-
-
-
-
-
-
-
-
-
-
-
