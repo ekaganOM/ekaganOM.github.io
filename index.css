@@ -1,3 +1,7 @@
+/* :root {
+    --screen-width: screen.width;  
+  }   */
+
 html,
 body {
   height: 100%;
@@ -22,11 +26,40 @@ body {
 #car {   
     height: 35px;
     width: 65px;
-    margin-top: 50px;
-    margin-left: 2.5px;
+    top: 50px;
+    left: 2.5px;
+    position: relative;
+    z-index: 3;
+}
+
+#dash {
     position: relative;
     z-index: 2;
+    height: 26px;
+    width: 138px;
 }
+
+.majorRoute {
+    /* background-color: black; */
+    width: 2029%;
+    height: 7px;
+    position: relative;
+    color: black;
+    border-style: solid;
+    border-width: 0px 0px 15px 0px;
+    border-bottom-style: dashed;
+    top: 6px;
+}
+
+/* .carTrail {
+    top: 25px;
+    position: relative;
+    z-index: 2;
+    border-color: black;
+    height: 10px;
+    width: 10px;
+    border-width: 0;
+} */
 
 .destination {
     height: 20px;
