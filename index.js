@@ -148,8 +148,24 @@ function getLocations(){
     columnIndex = Object.keys(orderOfLocations).sort(function(a,b){parseInt(a)<parseInt(b)});
 }
 
+function addLocations(passengerID){
+
+    //gets the DOM element for the two locations
+    var pickup = $(".grid div:nth-child(" + (passengerID == 1 ? p1 : p2) + ")");
+    var dropoff = $(".grid div:nth-child(" + (passengerID == 1 ? d1 : d2) + ")");
+
+    //add the destination image on the two random locations.
+    pickup.append("<img class='destination' src='images/d" + passengerID + 
+        ".png' alt='Destination'><strong class= 'locTag' >Pick up Passenger " + passengerID + "</strong>");
+    dropoff.append("<img class='destination' src='images/d" + passengerID + 
+        ".png' alt='Destination'><strong class= 'locTag' >Drop off Passenger " + passengerID + "</strong>");
+}
+
 function updateRoute(cell){
-    //get the best route between car and pick up 1       
+
+    let displacedCells = 0;
+    let direction = '';
+    //get the best route between car and cell       
     //if pick up in the same line => keep going right 
     if(carLocation < cell && (cell - carLocation)/ width < 1 ){
         var j = cell - carLocation;
@@ -160,30 +176,50 @@ function updateRoute(cell){
     }         
     // if pick up is above 
     else if (carLocation > cell){
+        direction = "up";
         //gets to the same column
         while((carLocation % width) != (cell % width)){
             route.push("r");
             carLocation += 1;
         }
+        //go up
         while (carLocation > cell){
             carLocation -= width;
             route.push("u");
+            displacedCells = displacedCells + 1;   
             // $(".grid div:nth-child("+ carLocation + ")").append("<img id='dash' src='./upDown.png'>");
-        }
+        }   
     }
     //if pick up is down
     else if(carLocation + width < cell){
+        direction = "down";
         //gets to the same column
         while((carLocation % width) != (cell % width)){
             route.push("r");
             carLocation += 1;
         }
+        //go down
         while(carLocation < cell){
             carLocation += width;
             route.push("d"); 
+            displacedCells = displacedCells + 1; 
             // $(".grid div:nth-child("+ carLocation + ")").append("<img id='dash' src='./upDown.png'>");
         }
     }  
+
+    //gets car back on the track.
+    if(direction == "up"){
+        for (var i = displacedCells; i > 0; i--){
+            route.push("d");
+            carLocation += width;
+        }
+    }
+    else {
+        for (var i = displacedCells; i > 0; i--){
+            route.push("u");
+            carLocation -= width;
+        }
+    }
     setTimeout(function(){ 
         animateCar(cell);
     }, 2500);
@@ -217,20 +253,6 @@ function animateCar(cell){
     //     $(".grid div:nth-child(" + cell + ")").empty();
     // }   
 }
-
-function addLocations(passengerID){
-
-    //gets the DOM element for the two locations
-    var pickup = $(".grid div:nth-child(" + (passengerID == 1 ? p1 : p2) + ")");
-    var dropoff = $(".grid div:nth-child(" + (passengerID == 1 ? d1 : d2) + ")");
-
-    //add the destination image on the two random locations.
-    pickup.append("<img class='destination' src='images/d" + passengerID + 
-        ".png' alt='Destination'><strong class= 'locTag' >Pick up Passenger " + passengerID + "</strong>");
-    dropoff.append("<img class='destination' src='images/d" + passengerID + 
-        ".png' alt='Destination'><strong class= 'locTag' >Drop off Passenger " + passengerID + "</strong>");
-}
-
 //execution starts here 
 createGrid();
 addCar();
@@ -243,6 +265,7 @@ setTimeout(function(){
     updateRoute(orderOfLocations[columnIndex[0]]);
 
     setTimeout(function(){
+        //add the second pair of locations on screen.
         addLocations(2);
         //get the time remaining and add 3 minutes to it every time a new passenger is added
         let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 + 
