@@ -159,6 +159,17 @@ function addLocations(passengerID){
         ".png' alt='Destination'><strong class= 'locTag' >Pick up Passenger " + passengerID + "</strong>");
     dropoff.append("<img class='destination' src='images/d" + passengerID + 
         ".png' alt='Destination'><strong class= 'locTag' >Drop off Passenger " + passengerID + "</strong>");
+
+    if(passengerID == 2){
+        //get the time remaining and add 3 minutes to it every time a new passenger is added
+        let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 + 
+        parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 180;
+        updateTimer(newDuration);
+
+        setTimeout(function() {
+            alert("New Passenger added! New time is " + newDuration);
+        }, 500);
+    }
 }
 
 function updateRoute(cell){
@@ -211,37 +222,37 @@ function updateRoute(cell){
     //pause before going back to track
     route.push("p");
 
-    //brings car back to track.
-    if(direction == "up"){
-        for (var i = displacedCells; i > 0; i--){           
-            route.push("d");
-            carLocation += width;
-        }
-    }
-    else {
-        for (var i = displacedCells; i > 0; i--){
-            route.push("u");
-            carLocation -= width;
-        }
-    }
- 
     setTimeout(function(){ 
-        animateCar(cell);
+        animateCar(cell, displacedCells, direction);
     }, 2500);
 
 }
 
-function animateCar(cell){
+function animateCar(cell, displacedCells, dir){
     function pauseAndRemove(){
         currStep++;
         if(stopIndex == currStep){
+            //removes previous destination.
             $(".grid div:nth-child(" + cell + ")").empty();
             setTimeout(function(){
+                //brings car back to track.
+                if(dir == "up"){
+                    for (var i = displacedCells; i > 0; i--){           
+                        route.push("d");
+                        carLocation += width;
+                    }
+                }
+                else {
+                    for (var i = displacedCells; i > 0; i--){
+                        route.push("u");
+                        carLocation -= width;
+                    }
+                }
                 columnIndex.shift();
                 if(columnIndex.length > 0){
                     updateRoute(orderOfLocations[columnIndex[0]]);
                 }
-            }, 2000);
+            }, 0);
         }
     } 
 
@@ -285,10 +296,6 @@ setTimeout(function(){
 
     setTimeout(function(){
         //add the second pair of locations on screen.
-        addLocations(2);
-        //get the time remaining and add 3 minutes to it every time a new passenger is added
-        let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 + 
-            parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 180;
-        updateTimer(newDuration);       
+        addLocations(2);        
     }, 3000);
 }, 3000);
