@@ -171,7 +171,7 @@ function updateRoute(cell){
         var j = cell - carLocation;
         for(var i = 0; i < j; i++){
             route.push("r");
-            carLocation += 1;
+            carLocation++;
         }  
     }         
     // if pick up is above 
@@ -180,15 +180,16 @@ function updateRoute(cell){
         //gets to the same column
         while((carLocation % width) != (cell % width)){
             route.push("r");
-            carLocation += 1;
+            carLocation++;
         }
         //go up
         while (carLocation > cell){
             carLocation -= width;
             route.push("u");
-            displacedCells = displacedCells + 1;   
+            displacedCells++;   
             // $(".grid div:nth-child("+ carLocation + ")").append("<img id='dash' src='./upDown.png'>");
         }   
+        
     }
     //if pick up is down
     else if(carLocation + width < cell){
@@ -196,20 +197,23 @@ function updateRoute(cell){
         //gets to the same column
         while((carLocation % width) != (cell % width)){
             route.push("r");
-            carLocation += 1;
+            carLocation++;
         }
         //go down
         while(carLocation < cell){
             carLocation += width;
             route.push("d"); 
-            displacedCells = displacedCells + 1; 
+            displacedCells++; 
             // $(".grid div:nth-child("+ carLocation + ")").append("<img id='dash' src='./upDown.png'>");
-        }
-    }  
+        }        
+    }
+       
+    //pause before going back to track
+    route.push("p");
 
-    //gets car back on the track.
+    //brings car back to track.
     if(direction == "up"){
-        for (var i = displacedCells; i > 0; i--){
+        for (var i = displacedCells; i > 0; i--){           
             route.push("d");
             carLocation += width;
         }
@@ -220,39 +224,54 @@ function updateRoute(cell){
             carLocation -= width;
         }
     }
+ 
     setTimeout(function(){ 
         animateCar(cell);
     }, 2500);
+
 }
 
 function animateCar(cell){
+    function pauseAndRemove(){
+        currStep++;
+        if(stopIndex == currStep){
+            $(".grid div:nth-child(" + cell + ")").empty();
+            setTimeout(function(){
+                columnIndex.shift();
+                if(columnIndex.length > 0){
+                    updateRoute(orderOfLocations[columnIndex[0]]);
+                }
+            }, 2000);
+        }
+    } 
+
+    //index of destination
+   let stopIndex = route.indexOf("p");
+   //steps till cell
+   let currStep = 0;
+
+    //the route includes coming back to the track after destination.
     while(route.length > 0){
         var direction = route[0];
         switch(direction) {
             case "r":               
-                $("#car").animate({"left": "+=70"}, "slow", "linear");            
+                $("#car").animate({"left": "+=70"}, "slow", "linear", pauseAndRemove)         
                 break;
             case "u":               
-                $("#car").animate({"top": "-=70"}, "slow", "linear");                          
+                $("#car").animate({"top": "-=70"}, "slow", "linear", pauseAndRemove)
                 break;               
             case "d":                              
-                $("#car").animate({"top": "+=70"}, "slow", "linear");                    
+                $("#car").animate({"top": "+=70"}, "slow", "linear", pauseAndRemove)
+                break;
+            case "p":
                 break;
             default: //shouldn't reach here               
-                $("#car").animate({"left": "+=70"}, "slow", "linear");               
+                $("#car").animate({"left": "+=70"}, "slow", "linear", pauseAndRemove)               
         }
         route.shift();
     }
-
-    columnIndex.shift();
-    if(columnIndex.length > 0){
-        updateRoute(orderOfLocations[columnIndex[0]]);
-    }    
-    //clearing the picked up location
-    // if(carLocation == cell){
-    //     $(".grid div:nth-child(" + cell + ")").empty();
-    // }   
 }
+
 //execution starts here 
 createGrid();
 addCar();
