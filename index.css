@@ -29,14 +29,7 @@ body {
     top: 50px;
     left: 2.5px;
     position: relative;
-    z-index: 3;
-}
-
-#dash {
-    position: relative;
-    z-index: 2;
-    height: 26px;
-    width: 138px;
+    z-index: 4;
 }
 
 .majorRoute {
@@ -47,6 +40,20 @@ body {
     border-width: 0px 0px 15px 0px;
     border-bottom-style: dashed;
     top: 6px;
+    opacity: 0.9; 
+}
+
+.minorRoute {
+    height: 30px;
+    width: 16px;
+    background-color: black;
+    color: black;
+    margin-left: 39px;
+    position: absolute;
+    margin-top: 20px;
+    z-index: 2;
+    opacity: 0.9;
+    border: none !important;   
 }
 
 .destination {
@@ -59,7 +66,11 @@ body {
 }
 
 .locTag {
+    position: relative;
     font-size: smaller;
+    z-index: 3;
+    color: rgb(212, 37, 212);
+
 }
 
 .timer {
