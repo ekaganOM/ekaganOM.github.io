@@ -147,6 +147,7 @@ function getLocations(){
     orderOfLocations[fourthMod] = fourth;
     orderOfLocations[width] = endLocation;
 
+    //sort to go in the order of closest location.
     columnIndex = Object.keys(orderOfLocations).sort(function(a,b){parseInt(a)<parseInt(b)});
 }
 
