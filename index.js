@@ -1,3 +1,9 @@
+//set the treatment number
+// Treatment 1: no additional passengers
+// Treatment 2: one additional passenger, dropped off after you
+// Treatment 3: one additional passenger, dropped off before you
+let treatment = 3;
+
 //sizeOfGrid 
 let gridSize = 70;
 
@@ -22,6 +28,10 @@ let columnIndex = [];
 
 //p1,p2,d1,d2
 let p1 = 0, p2 = 0, d1 = 0, d2 = 0;
+let p1Mod = 0, p2Mod = 0, d1Mod = 0, d2Mod = 0;
+
+//user rating
+let rating = -1;
 
 //car route
 let route = [];
@@ -31,6 +41,9 @@ let carLocation = 0;
 
 //move car off the screen
 let endLocation = 0;
+
+//number of stops reached
+let numStopsReached = 0;
 
 //creates the grid layout of size W x H of screen
 function createGrid() {
@@ -103,52 +116,73 @@ function countDown() {
 }
 
 function getLocations(){
-    var totalGrids = $(".grid").children().length;
-    let third = 0, fourth = 0;
-    //p1
-    //makes sure the location is never on boundary 
-    while (p1 < topRange || p1 % width < 3 || p1 > bottomRange || p1 % width > colRange) {
-        p1 = Math.floor((Math.random() * totalGrids) + 2);
-    }
-    //d1
-    while (d1 < topRange || d1 % width < colRange + 1 || d1 > bottomRange || d1 % width > (width - 2)) {
-        d1 = Math.floor((Math.random() * totalGrids) + 2);
-    }  
+    var calcHeight = Math.floor((height/2));
+    var carHeight = (calcHeight % 2 == 0 ? calcHeight-1 : calcHeight);
+    var startLocation = (carHeight * width) + 1; 
+    
+    //divides grid into equal portions to space out locations. 
+    //this is to account for screen sizes. 
+    var fifthWidth = Math.floor(width/5);
+    var fifthHeight = Math.floor(height/5);
 
-    //p2
-    //makes sure the location is never on boundary 
-    while (third < topRange || third % width < colRange + 1 || third > bottomRange || third % width > (width - 2) ||
-            third % width == d1 % width) {
-        third = Math.floor((Math.random() * totalGrids) + 2);
-    }
-    //d2
-    while (fourth < topRange || fourth % width < colRange + 1 || fourth > bottomRange || fourth % width > (width - 2) ||
-            (fourth % width == d1 % width || fourth % width == third % width)) {
-        fourth = Math.floor((Math.random() * totalGrids) + 2);
-    }
+    var first = (startLocation + fifthWidth) - width; 
+    var second = (startLocation + (fifthWidth * 2)) +  (fifthHeight * width);
+    var third = startLocation + (fifthWidth * 3) - (fifthHeight * width); 
+    var fourth = (startLocation + (fifthWidth * 4)) +  (fifthHeight * width);
 
-    var p1Mod = p1 % width;
-    var d1Mod = d1 % width;
-    var thirdMod = third % width;
-    var fourthMod = fourth % width;
-
-    if(thirdMod < fourthMod){
+    //if treatment == 1, there is no second passenger. 
+    //if treatment == 2, P2 displayed after P1 droppff, on specific location. 
+    //if treatment == 3, P2 displayed inbetween P1, on a specific location. 
+    if(treatment == 1){
+        p1 = first;
+        d1 = second;
+        p1Mod = p1 % width;
+        d1Mod = d1 % width;
+        orderOfLocations[p1Mod] = p1;
+        orderOfLocations[d1Mod] = d1;
+    } 
+    
+    //p2 gets dropped off after p1 
+    else if(treatment == 2){       
+        p1 = first;
+        d1 = second;
         p2 = third;
         d2 = fourth;
-    }
-    else{
-        p2 = fourth;
-        d2 = third;
+
+        p1Mod = p1 % width;
+        d1Mod = d1 % width;
+        p2Mod = p2 % width;
+        d2Mod = d2 % width;
+
+        orderOfLocations[p1Mod] = p1;
+        orderOfLocations[d1Mod] = d1;
+        orderOfLocations[p2Mod] = p2;
+        orderOfLocations[d2Mod] = d2;
     }
 
-    orderOfLocations[p1Mod] = p1;
-    orderOfLocations[d1Mod] = d1;
-    orderOfLocations[thirdMod] = third;
-    orderOfLocations[fourthMod] = fourth;
+    //p2 gets dropped off before p1
+    else if (treatment == 3){         
+        p1 = first;
+        p2 = second;
+        d2 = third;
+        d1 = fourth;
+
+        p1Mod = p1 % width;
+        d1Mod = d1 % width;
+        p2Mod = p2 % width;
+        d2Mod = d2 % width;
+
+        orderOfLocations[p1Mod] = p1;
+        orderOfLocations[d1Mod] = d1;
+        orderOfLocations[p2Mod] = p2;
+        orderOfLocations[d2Mod] = d2;
+    }
+
+    //go to the end location always   
     orderOfLocations[width] = endLocation;
 
-    //sort to go in the order of closest location.
-    columnIndex = Object.keys(orderOfLocations).sort(function(a,b){parseInt(a)<parseInt(b)});
+    //makes a list of all locations in order.
+    columnIndex = Object.keys(orderOfLocations);
 }
 
 function addLocations(passengerID){
@@ -179,7 +213,6 @@ function addLocations(passengerID){
 }
 
 function updateRoute(cell){
-
     let displacedCells = 0;
     let direction = '';
     //get the best route between car and cell       
@@ -240,9 +273,21 @@ function animateCar(cell, displacedCells, dir){
     //steps till cell
     let currStep = 0;
 
+    function userRating(){
+        rating = window.prompt("Rate your experience between 0 and 5.");
+        if (rating < 0 || rating > 5) {
+            userRating();
+        }
+    }
+
     function pauseAndRemove(){
         currStep++;
         if(stopIndex == currStep){
+            numStopsReached++;
+
+            //ask for user feedback and store in a global variable
+            // userRating();
+
             //removes previous destination.
             let children = $(".grid div:nth-child(" + cell + ")").children();
             var i = dir == "down" ? 1 : 0;
@@ -250,6 +295,14 @@ function animateCar(cell, displacedCells, dir){
                 children[i].remove();
             }
 
+            //add location of second passenger according to the treatment
+            if(treatment == 2 && numStopsReached == 2){
+                addLocations(2);
+            }
+            else if(treatment == 3 && numStopsReached == 1){
+                addLocations(2);
+            }
+            
             setTimeout(function(){
                 //brings car back to track.
                 if(dir == "up"){
@@ -276,27 +329,37 @@ function animateCar(cell, displacedCells, dir){
     while(route.length > 0){
         var direction = route[0];
         switch(direction) {
+            //syntax for animation: $(selector).supremate(properties,speed,easing,callback);
             case "r":               
-                $("#car").animate({"left": "+=70"}, "slow", "linear", function(){
+                $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
                     pauseAndRemove();
                 });  
                 break;
             case "u":
-                $("#car").animate({"top": "-=70"}, "slow", "linear", function(){
+                $("#car").supremate({"top": "-=70"}, 25, "linear", function(){
                     pauseAndRemove();
                 });     
                 break;               
             case "d":                              
-                $("#car").animate({"top": "+=70"}, "slow", "linear", function(){                   
+                $("#car").supremate({"top": "+=70"}, 25, "linear", function(){                
                     pauseAndRemove();
                 });
                 break;
             case "p":
                 break;
             default: //shouldn't reach here               
-                $("#car").animate({"left": "+=70"}, "slow", "linear", pauseAndRemove);               
+                $("#car").supremate({"left": "+=70"}, 25, "linear", function(){    
+                    pauseAndRemove();
+                });          
         }
-        prevDir = route.shift();
+        route.shift();
+
+        //rotate base code
+        // $("#car").css({
+        //     "-webkit-transform": "rotate(180deg)",
+        //     "-moz-transform": "rotate(180deg)",
+        //     "transform": "rotate(-90deg)"
+        // });
     }
 }
 
@@ -310,9 +373,4 @@ setTimeout(function(){
     addLocations(1);
     countDown();
     updateRoute(orderOfLocations[columnIndex[0]]);
-
-    setTimeout(function(){
-        //add the second pair of locations on screen.
-        addLocations(2);        
-    }, 3000);
 }, 3000);
