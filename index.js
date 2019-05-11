@@ -4,7 +4,7 @@
 // Treatment 3: one additional passenger, dropped off before you
 let treatment = 2;
 
-//sizeOfGrid 
+//sizeOfGrid
 let gridSize = 70;
 
 let width = Math.floor($(window).width()/gridSize);
@@ -13,10 +13,10 @@ let height = Math.floor($(window).height()/gridSize);
 //previous timer instance
 let timerInstance;
 
-//ROW RANGE CALCULATIONS 
-//rowRange divides the screen into 3 parts and uses the middle part only 
-let rowRange = Math.floor(height/3); 
-//COLUMN RANGE CALCULATIONS 
+//ROW RANGE CALCULATIONS
+//rowRange divides the screen into 3 parts and uses the middle part only
+let rowRange = Math.floor(height/3);
+//COLUMN RANGE CALCULATIONS
 let colRange = Math.floor(width/3);
 
 let topRange = 0;
@@ -36,7 +36,7 @@ let rating = -1;
 //car route
 let route = [];
 
-//carLocation number 
+//carLocation number
 let carLocation = 0;
 
 //move car off the screen
@@ -49,17 +49,17 @@ let numStopsReached = 0;
 function createGrid() {
     var ratioW = Math.floor($(window).width()/gridSize),
         ratioH = Math.floor($(window).height()/gridSize);
-       
+
     var parent = $('<div />', {
-        class: 'grid', 
-        width: ratioW  * gridSize, 
+        class: 'grid',
+        width: ratioW  * gridSize,
         height: ratioH  * gridSize
     }).addClass('grid').appendTo('body');
 
     for (var i = 0; i < ratioH; i++) {
         for(var p = 0; p < ratioW; p++){
             $('<div />', {
-                width: gridSize - 1, 
+                width: gridSize - 1,
                 height: gridSize - 1
             }).appendTo(parent);
         }
@@ -71,13 +71,13 @@ function addCar() {
     var calcHeight = Math.floor((height/2));
     var carHeight = (calcHeight % 2 == 0 ? calcHeight-1 : calcHeight);
 
-    carLocation = (carHeight * width) + 1; 
+    carLocation = (carHeight * width) + 1;
     endLocation = carLocation + width - 1;
     topRange = carLocation - 1 - (width * (rowRange - 1));
     bottomRange = carLocation - 1 + (width * (rowRange + 1));
 
     $(".grid div:nth-child("+ carLocation + ")").append("<img id='car' src='images/car.png' alt='Car'>");
-    //adds the main path at the same location 
+    //adds the main path at the same location
     $(".grid div:nth-child("+ carLocation + ")").append("<hr class='majorRoute'>");
     $(".majorRoute").width($(".grid").width());
 
@@ -100,7 +100,7 @@ function updateTimer(duration) {
         display.textContent = minutes + ":" + seconds;
 
         if (--timer < 0) {
-            timer = duration;
+            timer = 0;
         }
     }, 1000);
 }
@@ -118,21 +118,21 @@ function countDown() {
 function getLocations(){
     var calcHeight = Math.floor((height/2));
     var carHeight = (calcHeight % 2 == 0 ? calcHeight-1 : calcHeight);
-    var startLocation = (carHeight * width) + 1; 
-    
-    //divides grid into equal portions to space out locations. 
-    //this is to account for screen sizes. 
+    var startLocation = (carHeight * width) + 1;
+
+    //divides grid into equal portions to space out locations.
+    //this is to account for screen sizes.
     var fifthWidth = Math.floor(width/5);
     var fifthHeight = Math.floor(height/5);
 
-    var first = (startLocation + fifthWidth) - width; 
+    var first = (startLocation + fifthWidth) - width;
     var second = (startLocation + (fifthWidth * 2)) +  (fifthHeight * width);
-    var third = startLocation + (fifthWidth * 3) - (fifthHeight * width); 
+    var third = startLocation + (fifthWidth * 3) - (fifthHeight * width);
     var fourth = (startLocation + (fifthWidth * 4)) +  (fifthHeight * width);
 
-    //if treatment == 1, there is no second passenger. 
-    //if treatment == 2, P2 displayed after P1 droppff, on specific location. 
-    //if treatment == 3, P2 displayed inbetween P1, on a specific location. 
+    //if treatment == 1, there is no second passenger.
+    //if treatment == 2, P2 displayed after P1 droppff, on specific location.
+    //if treatment == 3, P2 displayed inbetween P1, on a specific location.
     if(treatment == 1){
         p1 = first;
         d1 = second;
@@ -140,10 +140,10 @@ function getLocations(){
         d1Mod = d1 % width;
         orderOfLocations[p1Mod] = p1;
         orderOfLocations[d1Mod] = d1;
-    } 
-    
-    //p2 gets dropped off after p1 
-    else if(treatment == 2){       
+    }
+
+    //p2 gets dropped off after p1
+    else if(treatment == 2){
         p1 = first;
         d1 = second;
         p2 = third;
@@ -161,7 +161,7 @@ function getLocations(){
     }
 
     //p2 gets dropped off before p1
-    else if (treatment == 3){         
+    else if (treatment == 3){
         p1 = first;
         p2 = second;
         d2 = third;
@@ -178,7 +178,7 @@ function getLocations(){
         orderOfLocations[d2Mod] = d2;
     }
 
-    //go to the end location always   
+    //go to the end location always
     orderOfLocations[width] = endLocation;
 
     //makes a list of all locations in order.
@@ -191,17 +191,17 @@ function addLocations(passengerID){
     var dropoff = $(".grid div:nth-child(" + (passengerID == 1 ? d1 : d2) + ")");
 
     //add the destination image on the two random locations.
-    pickup.append("<img class='destination' src='images/d" + passengerID + 
+    pickup.append("<img class='destination' src='images/d" + passengerID +
         ".png' alt='Destination'><strong class= 'locTag' >Pick up Passenger " + passengerID + "</strong>");
-    dropoff.append("<img class='destination' src='images/d" + passengerID + 
-        ".png' alt='Destination'><strong class= 'locTag' >Drop off Passenger " + passengerID + "</strong>");   
+    dropoff.append("<img class='destination' src='images/d" + passengerID +
+        ".png' alt='Destination'><strong class= 'locTag' >Drop off Passenger " + passengerID + "</strong>");
 
     if(passengerID == 2){
         //get the time remaining and add 3 minutes to it every time a new passenger is added
-        let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 + 
+        let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 +
         parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 120;
         updateTimer(newDuration);
-        
+
         let minutes =  "0" + (parseInt(document.getElementById("time").innerHTML.split(":")[0]) + 2);
         let seconds = parseInt(document.getElementById("time").innerHTML.split(":")[1]);
         let time = minutes + ":" + seconds;
@@ -215,16 +215,16 @@ function addLocations(passengerID){
 function updateRoute(cell){
     let displacedCells = 0;
     let direction = '';
-    //get the best route between car and cell       
-    //if pick up in the same line => keep going right 
+    //get the best route between car and cell
+    //if pick up in the same line => keep going right
     if(carLocation < cell && (cell - carLocation)/ width < 1 ){
         var j = cell - carLocation;
         for(var i = 0; i < j; i++){
             route.push("r");
             carLocation++;
-        }  
-    }         
-    // if pick up is above 
+        }
+    }
+    // if pick up is above
     else if (carLocation > cell){
         direction = "up";
         //gets to the same column
@@ -237,9 +237,8 @@ function updateRoute(cell){
             $(".grid div:nth-child("+ (carLocation) + ")").prepend("<div class='minorRoute'></div>");
             carLocation -= width;
             route.push("u");
-            displacedCells++;   
-        }   
-        
+            displacedCells++;
+        }
     }
     //if pick up is down
     else if(carLocation + width < cell){
@@ -253,15 +252,15 @@ function updateRoute(cell){
         while(carLocation < cell){
             carLocation += width;
             $(".grid div:nth-child("+ (carLocation) + ")").prepend("<div class='minorRoute'></div>");
-            route.push("d"); 
-            displacedCells++; 
-        }        
+            route.push("d");
+            displacedCells++;
+        }
     }
-       
+
     //pause before going back to track
     route.push("p");
 
-    setTimeout(function(){ 
+    setTimeout(function(){
         animateCar(cell, displacedCells, direction);
     }, 2500);
 
@@ -270,6 +269,7 @@ function updateRoute(cell){
 function animateCar(cell, displacedCells, dir){
     //index of destination
     let stopIndex = route.indexOf("p");
+
     //steps till cell
     let currStep = 0;
 
@@ -295,18 +295,18 @@ function animateCar(cell, displacedCells, dir){
                 children[i].remove();
             }
 
-            //add location of second passenger according to the treatment
+            //add location of second passenger to the screen according to the treatment
             if(treatment == 2 && numStopsReached == 2){
                 addLocations(2);
             }
             else if(treatment == 3 && numStopsReached == 1){
                 addLocations(2);
             }
-            
+
             setTimeout(function(){
                 //brings car back to track.
                 if(dir == "up"){
-                    for (var i = displacedCells; i > 0; i--){                                  
+                    for (var i = displacedCells; i > 0; i--){
                         route.push("d");
                         carLocation += width;
                     }
@@ -319,57 +319,87 @@ function animateCar(cell, displacedCells, dir){
                 }
                 columnIndex.shift();
                 if(columnIndex.length > 0){
+                    //we know we've paused, so remove that pause from the route before calculating the rest
+                    route.shift();
                     updateRoute(orderOfLocations[columnIndex[0]]);
                 }
             }, 0);
         }
-    } 
+    }
 
     //the route includes coming back to the track after destination.
-    while(route.length > 0){
-        var direction = route[0];
-        switch(direction) {
-            //syntax for animation: $(selector).supremate(properties,speed,easing,callback);
-            case "r":               
-                $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
-                    pauseAndRemove();
-                });  
-                break;
-            case "u":
-                $("#car").supremate({"top": "-=70"}, 25, "linear", function(){
-                    pauseAndRemove();
-                });     
-                break;               
-            case "d":                              
-                $("#car").supremate({"top": "+=70"}, 25, "linear", function(){                
-                    pauseAndRemove();
-                });
-                break;
-            case "p":
-                break;
-            default: //shouldn't reach here               
-                $("#car").supremate({"left": "+=70"}, 25, "linear", function(){    
-                    pauseAndRemove();
-                });          
-        }
-        route.shift();
+    function calculateRoute(){
+        if(route.length > 0){
+            var direction = route[0];
+            switch(direction) {
+                //syntax for animation: $(selector).supremate(properties,speed,easing,callback);
+                case "r":
+                    $("#car").css({
+                        "-webkit-transform": "rotate(0deg)",
+                        "-moz-transform": "rotate(0deg)",
+                        "transform": "rotate(0deg)"
+                    });
 
-        //rotate base code
-        // $("#car").css({
-        //     "-webkit-transform": "rotate(180deg)",
-        //     "-moz-transform": "rotate(180deg)",
-        //     "transform": "rotate(-90deg)"
-        // });
+                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
+                        route.shift();
+                        pauseAndRemove();
+                        calculateRoute();
+                    });
+                    break;
+                case "u":
+                    $("#car").css({
+                        "-webkit-transform": "rotate(-90deg)",
+                        "-moz-transform": "rotate(-90deg)",
+                        "transform": "rotate(-90deg)"
+                    });
+
+                    $("#car").supremate({"top": "-=70"}, 25, "linear", function(){
+                        route.shift();
+                        pauseAndRemove();
+                        calculateRoute();
+                    });
+                    break;
+                case "d":
+                    $("#car").css({
+                        "-webkit-transform": "rotate(90deg)",
+                        "-moz-transform": "rotate(90deg)",
+                        "transform": "rotate(90deg)"
+                    });
+
+                    $("#car").supremate({"top": "+=70"}, 25, "linear", function(){
+                        route.shift();
+                        pauseAndRemove();
+                        calculateRoute();
+                    });
+                    break;
+                case "p":
+                    break;
+                default: //shouldn't reach here
+                    $("#car").css({
+                        "-webkit-transform": "rotate(0deg)",
+                        "-moz-transform": "rotate(0deg)",
+                        "transform": "rotate(0deg)"
+                    });
+
+                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
+                        route.shift();
+                        pauseAndRemove();
+                        calculateRoute();
+                    });
+            }
+        }
     }
+
+    calculateRoute();
 }
 
-//execution starts here 
+//execution starts here
 createGrid();
 addCar();
 getLocations();
 
 setTimeout(function(){
-    //first passenger locations after 3 second delay  
+    //first passenger locations after 3 second delay
     addLocations(1);
     countDown();
     updateRoute(orderOfLocations[columnIndex[0]]);
