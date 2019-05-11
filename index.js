@@ -2,7 +2,7 @@
 // Treatment 1: no additional passengers
 // Treatment 2: one additional passenger, dropped off after you
 // Treatment 3: one additional passenger, dropped off before you
-let treatment = 3;
+let treatment = 2;
 
 //sizeOfGrid 
 let gridSize = 70;
