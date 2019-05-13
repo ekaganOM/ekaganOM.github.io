@@ -65,6 +65,15 @@ body {
     position: relative;
 }
 
+.participant {
+    height: 20px;
+    width: 20px;
+    z-index: 1;
+    top: 63px;
+    left: 12.5px;
+    position: relative;
+}
+
 .locTag {
     position: relative;
     font-size: smaller;

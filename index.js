@@ -87,6 +87,11 @@ function addCar() {
 
     //create the trail to the locations.
     $(".minorRoute").height($(".grid div").height());
+
+    //add the Participants' drop off location to the screen.
+    var dropoff = $(".grid div:nth-child(" + endLocation + ")");
+    dropoff.append("<img class='participant' src='images/d0.png' alt='Destination'>"+
+        "<strong class= 'locTag' >Your Drop off!</strong>");
 }
 
 //timer
@@ -314,6 +319,10 @@ function animateCar(cell, displacedCells, dir){
             }
             else if(treatment == 3 && numStopsReached == 1){
                 addLocations(2);
+            }
+
+            if(numStopsReached == 5){
+                alert("YOU HAVE REACHED YOUR DESTINATION !! ");
             }
 
             setTimeout(function(){
