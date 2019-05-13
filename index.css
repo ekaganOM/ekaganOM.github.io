@@ -1,5 +1,5 @@
 /* :root {
-    --screen-width: screen.width;  
+    --screen-width: screen.width;
   }   */
 
 html,
@@ -23,9 +23,9 @@ body {
     text-align: center;
 }
 
-#car {   
-    height: 35px;
-    width: 65px;
+#car {
+    height: 40px;
+    width: 70;
     top: 50px;
     left: 2.5px;
     position: relative;
@@ -40,7 +40,7 @@ body {
     border-width: 0px 0px 15px 0px;
     border-bottom-style: dashed;
     top: 6px;
-    opacity: 0.9; 
+    opacity: 0.9;
 }
 
 .minorRoute {
@@ -53,7 +53,7 @@ body {
     margin-top: 20px;
     z-index: 2;
     opacity: 0.9;
-    border: none !important;   
+    border: none !important;
 }
 
 .destination {
@@ -70,7 +70,6 @@ body {
     font-size: smaller;
     z-index: 3;
     color: rgb(212, 37, 212);
-
 }
 
 .timer {
