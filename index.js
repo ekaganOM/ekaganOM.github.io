@@ -31,8 +31,9 @@ let p1 = 0, p2 = 0, d1 = 0, d2 = 0;
 let p1Mod = 0, p2Mod = 0, d1Mod = 0, d2Mod = 0;
 
 //user rating
-let rating = -1;
+let lastRating = -1;
 let ratingList = [];
+let ratingInterval;
 
 //car route
 let route = [];
@@ -73,7 +74,6 @@ function addCar() {
     var carHeight = (calcHeight % 2 == 0 ? calcHeight-1 : calcHeight);
 
     carLocation = (carHeight * width) + 1;
-    var initialLocation = carLocation;
     endLocation = carLocation + width - 1;
     topRange = carLocation - 1 - (width * (rowRange - 1));
     bottomRange = carLocation - 1 + (width * (rowRange + 1));
@@ -203,15 +203,27 @@ function addLocations(passengerID){
 
     setTimeout(function (){
         let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 +
-        parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 22;
+        parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 23;
         updateTimer(newDuration);
 
-        let minutes =  "0" + (parseInt(document.getElementById("time").innerHTML.split(":")[0]));
-        let seconds = parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 22;
+        let minutes = parseInt(document.getElementById("time").innerHTML.split(":")[0] / 60, 10);
+        let seconds = parseInt(document.getElementById("time").innerHTML.split(":")[1] % 60, 10) + 23
+
+        while(seconds >= 60) {
+            seconds %= 60;
+            minutes++;
+        }
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
         let time = minutes + ":" + seconds;
-        // alert("alert!!");
         alert("New Passenger added! New time is " + time);
     },20);
+
+    //display the displaced route
+    //only if its the first stop since its handled separately
+    $(".minorRoute").css("display", "block");
 
     //gets the DOM element for the pick up location.
     var pickup = $(".grid div:nth-child(" + (passengerID == 1 ? p1 : p2) + ")");
@@ -251,6 +263,12 @@ function updateRoute(cell){
             route.push("u");
             displacedCells++;
         }
+
+        //display the displaced route
+        //only if its not the first stop since that is handled separately
+        if (numStopsReached > 0) {
+            $(".minorRoute").css("display", "block");
+        }
     }
     //if location is down
     else if(carLocation + width < cell){
@@ -275,10 +293,17 @@ function updateRoute(cell){
         //go down
         while(carLocation < cell){
             carLocation += width;
+
             //adds the route to destination on the screen.
             $(".grid div:nth-child("+ (carLocation) + ")").prepend("<div class='minorRoute'></div>");
             route.push("d");
             displacedCells++;
+        }
+
+        //display the displaced route
+        //only if its not the first stop since that is handled separately
+        if (numStopsReached > 0) {
+            $(".minorRoute").css("display", "block");
         }
     }
     //pause before going back to track
@@ -322,7 +347,8 @@ function animateCar(cell, displacedCells, dir){
             }
 
             if(numStopsReached == 5){
-                alert("YOU HAVE REACHED YOUR DESTINATION !! ");
+                clearInterval(ratingInterval);
+                alert("You have reached your destination!");
             }
 
             setTimeout(function(){
@@ -416,15 +442,28 @@ function animateCar(cell, displacedCells, dir){
     adjustRoute();
 }
 
+function userRating(){
+    lastRating = parseInt(window.prompt("Rate your experience between 0 and 5."));
+    if(isNaN(lastRating) || lastRating < 0 || lastRating > 5) {
+        userRating();
+    }
+    else{
+        ratingList.push(lastRating);
+    }
+}
+
+ratingInterval = setInterval(function(){
+    userRating();
+}, 30000);
+
 //execution starts here
 createGrid();
 addCar();
 getLocations();
 countDown();
+updateRoute(orderOfLocations[columnIndex[0]]);
 
 setTimeout(function(){
     //first passenger locations after 2 second delay
     addLocations(1);
-    updateRoute(orderOfLocations[columnIndex[0]]);
-}, 2000);
-
+}, 5000);
