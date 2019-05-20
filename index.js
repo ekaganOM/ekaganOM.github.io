@@ -32,9 +32,11 @@ let p0 = 0, p1 = 0, p2 = 0, d0 = 0, d1 = 0, d2 = 0;
 let p0Mod = 0, d0Mod = 0, p1Mod = 0, p2Mod = 0, d1Mod = 0, d2Mod = 0;
 
 //user rating
-let lastRating = -1;
 let ratingList = [];
 let ratingInterval;
+
+//response times in seconds to close alerts
+let responseTimes = [];
 
 //car route
 let route = [];
@@ -225,12 +227,23 @@ function addLocations(passengerID){
             seconds = seconds < 10 ? "0" + seconds : seconds;
 
             let time = minutes + ":" + seconds;
-            swal({
+
+            let timeAtOpen, timeAtClose;
+            Swal.fire({
                 title: "Alert!",
                 text: "New Passenger added! New time is " + time,
-                icon: "info",
-                button: "OK"
-              });
+                type: "info",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                onOpen: function() {
+                    timeAtOpen = performance.now();
+                },
+                onClose: function() {
+                    timeAtClose = performance.now();
+                    responseTimes.push(Math.ceil((timeAtClose - timeAtOpen) / 1000));
+                }
+            });
         }, 20);
     }
 
@@ -362,12 +375,22 @@ function animateCar(cell, displacedCells, dir){
 
             //Participant is picked up
             if(numStopsReached == 1){
-                swal({
+                let timeAtOpen, timeAtClose;
+                Swal.fire({
                     title: "Alert!",
                     text: "Your driver has arrived. You will arrive in " + document.getElementById("time").innerHTML,
-                    icon: "info",
-                    button: "OK"
-                  });
+                    type: "info",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    onOpen: function() {
+                        timeAtOpen = performance.now();
+                    },
+                    onClose: function() {
+                        timeAtClose = performance.now();
+                        responseTimes.push(Math.ceil((timeAtClose - timeAtOpen) / 1000));
+                    }
+                });
 
                 setTimeout(function(){
                     //first passenger locations after 5 second delay
@@ -392,13 +415,23 @@ function animateCar(cell, displacedCells, dir){
 
             if(numStopsReached == 6){
                 clearInterval(ratingInterval);
-                // alert("You have reached your destination!");
-                swal({
+
+                let timeAtOpen, timeAtClose;
+                Swal.fire({
                     title: "Notice",
                     text: "You have reached your destination!",
-                    icon: "success",
-                    button: "OK",
-                  });
+                    type: "success",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    onOpen: function() {
+                        timeAtOpen = performance.now();
+                    },
+                    onClose: function() {
+                        timeAtClose = performance.now();
+                        responseTimes.push(Math.ceil((timeAtClose - timeAtOpen) / 1000));
+                    }
+                });
             }
 
             setTimeout(function(){
@@ -439,7 +472,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 50, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -452,7 +485,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(-90deg)"
                     });
 
-                    $("#car").supremate({"top": "-=70"}, 50, "linear", function(){
+                    $("#car").supremate({"top": "-=70"}, 25, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -465,7 +498,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(90deg)"
                     });
 
-                    $("#car").supremate({"top": "+=70"}, 50, "linear", function(){
+                    $("#car").supremate({"top": "+=70"}, 25, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -480,7 +513,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 50, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -491,19 +524,47 @@ function animateCar(cell, displacedCells, dir){
     adjustRoute();
 }
 
-function userRating(){
-    swal({
-        title: "Alert!",
-        text: "New Passenger added! New time is " + time,
-        icon: "info",
-        button: "OK"
-      });
-    // <div class="svg-star-rating jq-stars"></div>
-
+function userRating() {
+    let timeAtOpen, timeAtClose;
+    Swal.fire({
+        title: "Please leave a rating!",
+        html:
+            "<head><style>" +
+            "#rate{margin-left:16vh;float:left;height:46px;padding:0 10px}#rate:not(:checked)>input{position:absolute;top:-9999px}" +
+            "#rate:not(:checked)>label{float:right;width:1em;overflow:hidden;white-space:nowrap;cursor:pointer;" +
+            "font-size:30px;color:#ccc}#rate:not(:checked)>label:before{content:url(images/unfilled.png);}#rate>input:checked~label{content:url(images/filled.png);}" +
+            "#rate:not(:checked)>label:hover,#rate:not(:checked)>label:hover~label{content:url(images/filled.png);}#rate>input:checked + label:hover," +
+            "#rate>input:checked + label:hover~label,#rate>input:checked~label:hover,#rate>input:checked~label:hover~label," +
+            "#rate>label:hover~input:checked~label{color:#c59b08}" +
+            "</style></head>" +
+            "<body><form id='rate'>" +
+                "<input type='radio' id='star7' name='rate' value='7' /><label for='star7' title='text'>7 stars</label>" +
+                "<input type='radio' id='star6' name='rate' value='6' /><label for='star6' title='text'>6 stars</label>" +
+                "<input type='radio' id='star5' name='rate' value='5' /><label for='star5' title='text'>5 stars</label>" +
+                "<input type='radio' id='star4' name='rate' value='4' /><label for='star4' title='text'>4 stars</label>" +
+                "<input type='radio' id='star3' name='rate' value='3' /><label for='star3' title='text'>3 stars</label>" +
+                "<input type='radio' id='star2' name='rate' value='2' /><label for='star2' title='text'>2 stars</label>" +
+                "<input type='radio' id='star1' name='rate' value='1' /><label for='star1' title='text'>1 star</label>" +
+            "</form></body>",
+        preConfirm: function() {
+            ratingList.push(parseInt($('input[name=rate]:checked', '#rate').val()));
+        },
+        type: "question",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        onOpen: function() {
+            timeAtOpen = performance.now();
+        },
+        onClose: function() {
+            timeAtClose = performance.now();
+            responseTimes.push(Math.ceil((timeAtClose - timeAtOpen) / 1000));
+        }
+    });
 }
 
 ratingInterval = setInterval(function(){
-    // userRating();
+    userRating();
 }, 30000);
 
 //execution starts here
@@ -512,4 +573,3 @@ addToScreen();
 getLocations();
 countDown();
 updateRoute(orderOfLocations[columnIndex[0]]);
-
