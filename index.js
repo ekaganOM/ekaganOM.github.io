@@ -1,7 +1,7 @@
 //set the treatment number
-// Treatment 1: one additional passenger, dropped off before you
-// Treatment 2: two additional passengers, both dropped before you
-// Treatment 3: one additional passenger, dropped off before you
+// Treatment 1: one additional passenger, drop off order: P1, P0
+// Treatment 2: two additional passengers, drop off order: P1, P2, P0
+// Treatment 3: two additional passengers, drop off order: P2, P1, P0
 let treatment = 2;
 
 //sizeOfGrid
@@ -26,9 +26,10 @@ let bottomRange = 0;
 let orderOfLocations = {};
 let columnIndex = [];
 
+//p0 is the participant
 //p1,p2,d1,d2
-let p1 = 0, p2 = 0, d1 = 0, d2 = 0;
-let p1Mod = 0, p2Mod = 0, d1Mod = 0, d2Mod = 0;
+let p0 = 0, p1 = 0, p2 = 0, d0 = 0, d1 = 0, d2 = 0;
+let p0Mod = 0, d0Mod = 0, p1Mod = 0, p2Mod = 0, d1Mod = 0, d2Mod = 0;
 
 //user rating
 let lastRating = -1;
@@ -68,30 +69,28 @@ function createGrid() {
     }
 }
 
-// adds car to the centre row of the screen, along with the main horizontal route
-function addCar() {
+// adds to screen: major horizontal route, the car, participants locations.
+function addToScreen() {
     var calcHeight = Math.floor((height/2));
     var carHeight = (calcHeight % 2 == 0 ? calcHeight-1 : calcHeight);
 
     carLocation = (carHeight * width) + 1;
+
+    startLocation = (carHeight * width) + 1;
     endLocation = carLocation + width - 1;
+
     topRange = carLocation - 1 - (width * (rowRange - 1));
     bottomRange = carLocation - 1 + (width * (rowRange + 1));
 
     //add car to screen
     $(".grid div:nth-child("+ carLocation + ")").append("<img id='car' src='images/car.png' alt='Car'>" );
 
-    //adds the main path at the same location
-    $(".grid div:nth-child("+ carLocation + ")").append("<hr class='majorRoute'>");
+    //adds the main path at the start location
+    $(".grid div:nth-child("+ startLocation + ")").append("<hr class='majorRoute'>");
     $(".majorRoute").width($(".grid").width());
 
-    //create the trail to the locations.
+    //create and adjust height of the trail to the locations.
     $(".minorRoute").height($(".grid div").height());
-
-    //add the Participants' drop off location to the screen.
-    var dropoff = $(".grid div:nth-child(" + endLocation + ")");
-    dropoff.append("<img class='participant' src='images/d0.png' alt='Destination'>"+
-        "<strong class= 'locTag' >Your Drop off!</strong>");
 }
 
 //timer
@@ -137,6 +136,13 @@ function getLocations(){
     var fifthWidth = Math.floor(width/5);
     var fifthHeight = Math.floor(height/5);
 
+    //values for locations for Participant
+    var participantPickup = startLocation + 2;
+    p0 = participantPickup;
+    p0Mod = p0 % width;
+    orderOfLocations[p0Mod] = p0;
+
+    //values for locations for additional passengers
     var first = (startLocation + fifthWidth) - width;
     var second = (startLocation + (fifthWidth * 2)) +  (fifthHeight * width);
     var third = startLocation + (fifthWidth * 3) - (fifthHeight * width);
@@ -200,39 +206,59 @@ function getLocations(){
 //increases the timer when new passengers are added.
 //displays the locations on screen for pick up only.
 function addLocations(passengerID){
+    var pickup;
+    if(passengerID > 0){
+        setTimeout(function (){
+            let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 +
+            parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 23;
+            updateTimer(newDuration);
 
-    setTimeout(function (){
-        let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 +
-        parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 23;
-        updateTimer(newDuration);
+            let minutes = parseInt(document.getElementById("time").innerHTML.split(":")[0] / 60, 10);
+            let seconds = parseInt(document.getElementById("time").innerHTML.split(":")[1] % 60, 10) + 23
 
-        let minutes = parseInt(document.getElementById("time").innerHTML.split(":")[0] / 60, 10);
-        let seconds = parseInt(document.getElementById("time").innerHTML.split(":")[1] % 60, 10) + 23
+            while(seconds >= 60) {
+                seconds %= 60;
+                minutes++;
+            }
 
-        while(seconds >= 60) {
-            seconds %= 60;
-            minutes++;
-        }
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        let time = minutes + ":" + seconds;
-        alert("New Passenger added! New time is " + time);
-    },20);
+            let time = minutes + ":" + seconds;
+            swal({
+                title: "Alert!",
+                text: "New Passenger added! New time is " + time,
+                icon: "info",
+                button: "OK"
+              });
+        }, 20);
+    }
 
     //display the displaced route
     //only if its the first stop since its handled separately
     $(".minorRoute").css("display", "block");
 
     //gets the DOM element for the pick up location.
-    var pickup = $(".grid div:nth-child(" + (passengerID == 1 ? p1 : p2) + ")");
+    var pickup = $(".grid div:nth-child(" + (passengerID == 0 ? p0 : passengerID == 1 ? p1 : p2) + ")");
 
-    //add the pick up image on the location.
-    pickup.append("<img class='destination' src='images/d" + passengerID +
+    if(passengerID == 0){
+        //add the pick up image on the location.
+        pickup.append("<img class='participant' src='images/d" + passengerID +
+        ".png' alt='Destination'><strong class= 'p0Tag locTag' >Your Pickup!</strong>");
+
+        var dropoff = $(".grid div:nth-child(" + endLocation + ")");
+        dropoff.append("<img class='participant'src='images/d0.png' alt='Destination'>"+
+        "<strong class= 'p0Tag locTag' >Your Dropoff!</strong>");
+    }
+
+    else{
+        //add the pick up image on the location.
+        pickup.append("<img class='destination' src='images/d" + passengerID +
         ".png' alt='Destination'><strong class= 'locTag' >Pick up Passenger " + passengerID + "</strong>");
+    }
 }
 
+//creates route to the next location
 function updateRoute(cell){
     let displacedCells = 0; //number of cells moved up/down
     let direction = '';
@@ -266,14 +292,14 @@ function updateRoute(cell){
 
         //display the displaced route
         //only if its not the first stop since that is handled separately
-        if (numStopsReached > 0) {
+        if (numStopsReached > 1) {
             $(".minorRoute").css("display", "block");
         }
     }
     //if location is down
     else if(carLocation + width < cell){
-        //add the destination image to the screen.
-        if(numStopsReached == 1){
+        //add the destination image to the screen along with the route.
+        if(numStopsReached == 2){
             dest = 1;
         }
         else{
@@ -302,13 +328,16 @@ function updateRoute(cell){
 
         //display the displaced route
         //only if its not the first stop since that is handled separately
-        if (numStopsReached > 0) {
+        if (numStopsReached > 1) {
             $(".minorRoute").css("display", "block");
         }
     }
     //pause before going back to track
     route.push("p");
 
+    if(numStopsReached == 0){
+        addLocations(0);
+    }
     setTimeout(function(){
         animateCar(cell, displacedCells, direction);
     }, 2500);
@@ -331,6 +360,21 @@ function animateCar(cell, displacedCells, dir){
         if(stopIndex == currStep){
             numStopsReached++;
 
+            //Participant is picked up
+            if(numStopsReached == 1){
+                swal({
+                    title: "Alert!",
+                    text: "Your driver has arrived. You will arrive in " + document.getElementById("time").innerHTML,
+                    icon: "info",
+                    button: "OK"
+                  });
+
+                setTimeout(function(){
+                    //first passenger locations after 5 second delay
+                    addLocations(1);
+                }, 3000);
+            }
+
             //removes previous destination.
             let children = $(".grid div:nth-child(" + cell + ")").children();
             var i = dir == "down" ? 1 : 0;
@@ -339,16 +383,22 @@ function animateCar(cell, displacedCells, dir){
             }
 
             //add location of second passenger to the screen according to the treatment
-            if(treatment == 2 && numStopsReached == 2){
+            if(treatment == 2 && numStopsReached == 3){
                 addLocations(2);
             }
-            else if(treatment == 3 && numStopsReached == 1){
+            else if(treatment == 3 && numStopsReached == 2){
                 addLocations(2);
             }
 
-            if(numStopsReached == 5){
+            if(numStopsReached == 6){
                 clearInterval(ratingInterval);
-                alert("You have reached your destination!");
+                // alert("You have reached your destination!");
+                swal({
+                    title: "Notice",
+                    text: "You have reached your destination!",
+                    icon: "success",
+                    button: "OK",
+                  });
             }
 
             setTimeout(function(){
@@ -389,7 +439,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 50, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -402,7 +452,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(-90deg)"
                     });
 
-                    $("#car").supremate({"top": "-=70"}, 25, "linear", function(){
+                    $("#car").supremate({"top": "-=70"}, 50, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -415,7 +465,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(90deg)"
                     });
 
-                    $("#car").supremate({"top": "+=70"}, 25, "linear", function(){
+                    $("#car").supremate({"top": "+=70"}, 50, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -430,7 +480,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 50, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -438,32 +488,28 @@ function animateCar(cell, displacedCells, dir){
             }
         }
     }
-
     adjustRoute();
 }
 
 function userRating(){
-    lastRating = parseInt(window.prompt("Rate your experience between 0 and 5."));
-    if(isNaN(lastRating) || lastRating < 0 || lastRating > 5) {
-        userRating();
-    }
-    else{
-        ratingList.push(lastRating);
-    }
+    swal({
+        title: "Alert!",
+        text: "New Passenger added! New time is " + time,
+        icon: "info",
+        button: "OK"
+      });
+    // <div class="svg-star-rating jq-stars"></div>
+
 }
 
 ratingInterval = setInterval(function(){
-    userRating();
+    // userRating();
 }, 30000);
 
 //execution starts here
 createGrid();
-addCar();
+addToScreen();
 getLocations();
 countDown();
 updateRoute(orderOfLocations[columnIndex[0]]);
 
-setTimeout(function(){
-    //first passenger locations after 2 second delay
-    addLocations(1);
-}, 5000);
