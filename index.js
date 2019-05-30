@@ -19,9 +19,6 @@ let rowRange = Math.floor(height/3);
 //COLUMN RANGE CALCULATIONS
 let colRange = Math.floor(width/3);
 
-let topRange = 0;
-let bottomRange = 0;
-
 //order in which car reaches the locations p1,p2,d1,d2
 let orderOfLocations = {};
 let columnIndex = [];
@@ -44,6 +41,8 @@ let route = [];
 //carLocation number
 let carLocation = 0;
 
+//startingLocation
+let startLocation = 0;
 //move car off the screen
 let endLocation = 0;
 
@@ -81,11 +80,8 @@ function addToScreen() {
     startLocation = (carHeight * width) + 1;
     endLocation = carLocation + width - 1;
 
-    topRange = carLocation - 1 - (width * (rowRange - 1));
-    bottomRange = carLocation - 1 + (width * (rowRange + 1));
-
     //add car to screen
-    $(".grid div:nth-child("+ carLocation + ")").append("<img id='car' src='images/car.png' alt='Car'>" );
+    $(".grid div:nth-child("+ carLocation + ")").append("<img id='car' src='images/car.png' alt='Car'>");
 
     //adds the main path at the start location
     $(".grid div:nth-child("+ startLocation + ")").append("<hr class='majorRoute'>");
@@ -152,7 +148,6 @@ function getLocations(){
 
     //if treatment == 1, one additional passenger.
     //if treatment == 2, P2 displayed after P1 droppff, on specific location.
-    //if treatment == 3, P2 displayed inbetween P1, on a specific location.
     if(treatment == 1){
         p1 = first;
         d1 = second;
@@ -263,7 +258,6 @@ function addLocations(passengerID){
         dropoff.append("<img class='participant'src='images/d0.png' alt='Destination'>"+
         "<strong class= 'p0Tag locTag' >Your Dropoff!</strong>");
     }
-
     else{
         //add the pick up image on the location.
         pickup.append("<img class='destination' src='images/d" + passengerID +
@@ -288,6 +282,19 @@ function updateRoute(cell){
     }
     // if location is above
     else if (carLocation > cell){
+        //because treatment 2 does not have drop off above the major route
+        if(treatment == 3){
+            //add the destination image to the screen along with the route.
+            if(numStopsReached == 2){
+                var dropoff = $(".grid div:nth-child(" + d1 + ")");
+                dropoff.append("<img class='destination' src='images/d1.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 1</strong>");
+            }
+            else if(numStopsReached == 3){
+                var dropoff = $(".grid div:nth-child(" + d2 + ")");
+                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 2</strong>");
+            }
+        }
+
         //direction is changed to "up" for animate to remove visited location
         direction = "up";
         //gets to the same column
@@ -313,15 +320,13 @@ function updateRoute(cell){
     else if(carLocation + width < cell){
         //add the destination image to the screen along with the route.
         if(numStopsReached == 2){
-            dest = 1;
+            var dropoff = $(".grid div:nth-child(" + d1 + ")");
+            dropoff.append("<img class='destination' src='images/d1.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 1</strong>");
         }
-        else{
-            dest = 2;
+        else if(numStopsReached == 3){
+            var dropoff = $(".grid div:nth-child(" + d2 + ")");
+            dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 2</strong>");
         }
-        var dropoff = $(".grid div:nth-child(" + (dest == 1 ? d1 : d2) + ")");
-        dropoff.append("<img class='destination' src='images/d" + dest +
-        ".png' alt='Destination'><strong class= 'locTag' >Drop off Passenger " + dest + "</strong>");
-
         //direction is changed to "down" for animate to remove visited location
         direction = "down";
         //gets to the same column
@@ -358,7 +363,9 @@ function updateRoute(cell){
 }
 
 //animate car includes:
-//pauseAndRemove - pauses the car at destinations and removes the destination when visited
+//pauseAndRemove - pauses the car at destinations,
+//                 removes the destination image when visited,
+//                 changes the images of the car according to the passengers in it
 //adjustRoute - rotates and moves the car up/down. Recursively calls itself to work through the route.
 function animateCar(cell, displacedCells, dir){
     //index of destination
@@ -393,9 +400,9 @@ function animateCar(cell, displacedCells, dir){
                 });
 
                 setTimeout(function(){
-                    //first passenger locations after 5 second delay
+                    //first additional passenger locations after 5 second delay
                     addLocations(1);
-                }, 3000);
+                }, 5000);
             }
 
             //removes previous destination.
@@ -405,6 +412,38 @@ function animateCar(cell, displacedCells, dir){
                 children[i].remove();
             }
 
+            //change the image to have passengers in car.
+            //car0 == numStops = 1, 3, 5
+            //car1 == numStops = 2
+            if(treatment == 2){
+                if(numStopsReached == 1 || numStopsReached == 3 || numStopsReached == 5){
+                    document.getElementById("car").src = 'images/car0.png';
+                }
+                else if(numStopsReached == 2){
+                    document.getElementById("car").src = 'images/car1.png';
+                }
+                else if(numStopsReached == 4){
+                    document.getElementById("car").src = 'images/car2.png';
+                }
+                else{ //last stop 6
+                    document.getElementById("car").src = 'images/car.png';
+                }
+            }
+            if(treatment == 3){
+                if(numStopsReached == 1 || numStopsReached == 5){
+                    document.getElementById("car").src = 'images/car0.png';
+                }
+                else if(numStopsReached == 2 || numStopsReached == 4){
+                    document.getElementById("car").src = 'images/car1.png';
+                }
+                else if(numStopsReached == 3){
+                    document.getElementById("car").src = 'images/car3.png';
+                }
+                else{ //last stop 6
+                    document.getElementById("car").src = 'images/car.png';
+                }
+            }
+
             //add location of second passenger to the screen according to the treatment
             if(treatment == 2 && numStopsReached == 3){
                 addLocations(2);
@@ -412,7 +451,6 @@ function animateCar(cell, displacedCells, dir){
             else if(treatment == 3 && numStopsReached == 2){
                 addLocations(2);
             }
-
             if(numStopsReached == 6){
                 clearInterval(ratingInterval);
 
@@ -455,7 +493,7 @@ function animateCar(cell, displacedCells, dir){
                     route.shift();
                     updateRoute(orderOfLocations[columnIndex[0]]);
                 }
-            }, 0);
+            }, 1000);
         }
     }
 
@@ -472,7 +510,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 15, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -485,7 +523,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(-90deg)"
                     });
 
-                    $("#car").supremate({"top": "-=70"}, 25, "linear", function(){
+                    $("#car").supremate({"top": "-=70"}, 15, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -498,7 +536,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(90deg)"
                     });
 
-                    $("#car").supremate({"top": "+=70"}, 25, "linear", function(){
+                    $("#car").supremate({"top": "+=70"}, 15, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -513,7 +551,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 25, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 15, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -530,7 +568,7 @@ function userRating() {
         title: "Please leave a rating!",
         html:
             "<head><style>" +
-            "#rate{margin-left:16vh;float:left;height:46px;padding:0 10px}#rate:not(:checked)>input{position:absolute;top:-9999px}" +
+            "#rate{display:inline-block;height:46px;padding:0 10px}#rate:not(:checked)>input{position:absolute;top:-9999px}" +
             "#rate:not(:checked)>label{float:right;width:1em;overflow:hidden;white-space:nowrap;cursor:pointer;" +
             "font-size:30px;color:#ccc}#rate:not(:checked)>label:before{content:url(images/unfilled.png);}#rate>input:checked~label{content:url(images/filled.png);}" +
             "#rate:not(:checked)>label:hover,#rate:not(:checked)>label:hover~label{content:url(images/filled.png);}#rate>input:checked + label:hover," +
@@ -563,11 +601,11 @@ function userRating() {
     });
 }
 
+//execution starts here
 ratingInterval = setInterval(function(){
     userRating();
 }, 30000);
 
-//execution starts here
 createGrid();
 addToScreen();
 getLocations();
