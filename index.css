@@ -75,12 +75,23 @@ body {
     position: relative;
     font-size: smaller;
     z-index: 3;
-    color: rgb(212, 37, 212);
+    color: black;
 }
 
-.p0Tag {
+.p1Tag {
     top: 82px;
+    color: #BF0000;
 }
+
+.p2Tag {
+    color: #0000BF;
+}
+
+.p3Tag {
+    color: #007F00;
+}
+
+
 
 .timer {
     position: absolute;

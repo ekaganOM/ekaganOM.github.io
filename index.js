@@ -1,4 +1,4 @@
-//set the treatment number
+2//set the treatment number
 // Treatment 1: one additional passenger, drop off order: P1, P0
 // Treatment 2: two additional passengers, drop off order: P1, P2, P0
 // Treatment 3: two additional passengers, drop off order: P2, P1, P0
@@ -204,7 +204,7 @@ function getLocations(){
 //displays the locations on screen for pick up only.
 function addLocations(passengerID){
     var pickup;
-    if(passengerID > 0){
+    if(passengerID > 1){
         setTimeout(function (){
             let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 +
             parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 23;
@@ -247,21 +247,26 @@ function addLocations(passengerID){
     $(".minorRoute").css("display", "block");
 
     //gets the DOM element for the pick up location.
-    var pickup = $(".grid div:nth-child(" + (passengerID == 0 ? p0 : passengerID == 1 ? p1 : p2) + ")");
+    var pickup = $(".grid div:nth-child(" + (passengerID == 1 ? p0 : passengerID == 2 ? p1 : p2) + ")");
 
-    if(passengerID == 0){
+    if(passengerID == 1){
         //add the pick up image on the location.
         pickup.append("<img class='participant' src='images/d" + passengerID +
-        ".png' alt='Destination'><strong class= 'p0Tag locTag' >Your Pickup!</strong>");
+        ".png' alt='Destination'><strong class= 'p1Tag locTag' >Your Pickup!</strong>");
 
         var dropoff = $(".grid div:nth-child(" + endLocation + ")");
-        dropoff.append("<img class='participant'src='images/d0.png' alt='Destination'>"+
-        "<strong class= 'p0Tag locTag' >Your Dropoff!</strong>");
+        dropoff.append("<img class='participant'src='images/d1.png' alt='Destination'>"+
+        "<strong class= 'p1Tag locTag' >Your Dropoff!</strong>");
     }
-    else{
+    else if(passengerID == 2){
         //add the pick up image on the location.
-        pickup.append("<img class='destination' src='images/d" + passengerID +
-        ".png' alt='Destination'><strong class= 'locTag' >Pick up Passenger " + passengerID + "</strong>");
+        pickup.append("<img class='destination' src='images/d2"+
+        ".png' alt='Destination'><strong class= 'locTag p2Tag' >Pick up Passenger 2</strong>");
+    }
+    else{ //if(passengerID == 3)
+        //add the pick up image on the location.
+        pickup.append("<img class='destination' src='images/d3"+
+        ".png' alt='Destination'><strong class= 'locTag p3Tag' >Pick up Passenger 3</strong>");
     }
 }
 
@@ -282,16 +287,17 @@ function updateRoute(cell){
     }
     // if location is above
     else if (carLocation > cell){
-        //because treatment 2 does not have drop off above the major route
+        //because treatment 2 does not have drop off above the major route, we only need this order of
+        //appearance of dropoff for treatment 3
         if(treatment == 3){
             //add the destination image to the screen along with the route.
             if(numStopsReached == 2){
                 var dropoff = $(".grid div:nth-child(" + d1 + ")");
-                dropoff.append("<img class='destination' src='images/d1.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 1</strong>");
+                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
             }
             else if(numStopsReached == 3){
                 var dropoff = $(".grid div:nth-child(" + d2 + ")");
-                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 2</strong>");
+                dropoff.append("<img class='destination' src='images/d3.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
             }
         }
 
@@ -319,14 +325,27 @@ function updateRoute(cell){
     //if location is down
     else if(carLocation + width < cell){
         //add the destination image to the screen along with the route.
-        if(numStopsReached == 2){
-            var dropoff = $(".grid div:nth-child(" + d1 + ")");
-            dropoff.append("<img class='destination' src='images/d1.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 1</strong>");
+        if(treatment == 2){
+            if(numStopsReached == 2){
+                var dropoff = $(".grid div:nth-child(" + d1 + ")");
+                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
+            }
+            else if(numStopsReached == 4){
+                var dropoff = $(".grid div:nth-child(" + d2 + ")");
+                dropoff.append("<img class='destination' src='images/d3.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
+            }
         }
-        else if(numStopsReached == 3){
-            var dropoff = $(".grid div:nth-child(" + d2 + ")");
-            dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag' >Drop off Passenger 2</strong>");
+        else{ //treatment 3
+            if(numStopsReached == 3){
+                var dropoff = $(".grid div:nth-child(" + d2 + ")");
+                dropoff.append("<img class='destination' src='images/d3.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
+            }
+            else if(numStopsReached == 4){
+                var dropoff = $(".grid div:nth-child(" + d1 + ")");
+                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
+            }
         }
+
         //direction is changed to "down" for animate to remove visited location
         direction = "down";
         //gets to the same column
@@ -354,7 +373,7 @@ function updateRoute(cell){
     route.push("p");
 
     if(numStopsReached == 0){
-        addLocations(0);
+        addLocations(1);
     }
     setTimeout(function(){
         animateCar(cell, displacedCells, direction);
@@ -385,7 +404,7 @@ function animateCar(cell, displacedCells, dir){
                 let timeAtOpen, timeAtClose;
                 Swal.fire({
                     title: "Alert!",
-                    text: "Your driver has arrived. You will arrive in " + document.getElementById("time").innerHTML,
+                    text: "Passenger 1, your driver has arrived. You will arrive in " + document.getElementById("time").innerHTML,
                     type: "info",
                     allowOutsideClick: false,
                     allowEscapeKey: false,
@@ -400,8 +419,8 @@ function animateCar(cell, displacedCells, dir){
                 });
 
                 setTimeout(function(){
-                    //first additional passenger locations after 5 second delay
-                    addLocations(1);
+                    //second passenger locations after 5 second delay
+                    addLocations(2);
                 }, 5000);
             }
 
@@ -425,7 +444,7 @@ function animateCar(cell, displacedCells, dir){
                 else if(numStopsReached == 4){
                     document.getElementById("car").src = 'images/car2.png';
                 }
-                else{ //last stop 6
+                else{ //last stop 6 i.e car only has driver
                     document.getElementById("car").src = 'images/car.png';
                 }
             }
@@ -446,10 +465,10 @@ function animateCar(cell, displacedCells, dir){
 
             //add location of second passenger to the screen according to the treatment
             if(treatment == 2 && numStopsReached == 3){
-                addLocations(2);
+                addLocations(3);
             }
             else if(treatment == 3 && numStopsReached == 2){
-                addLocations(2);
+                addLocations(3);
             }
             if(numStopsReached == 6){
                 clearInterval(ratingInterval);
@@ -510,7 +529,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 15, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 20, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -523,7 +542,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(-90deg)"
                     });
 
-                    $("#car").supremate({"top": "-=70"}, 15, "linear", function(){
+                    $("#car").supremate({"top": "-=70"}, 20, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -536,7 +555,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(90deg)"
                     });
 
-                    $("#car").supremate({"top": "+=70"}, 15, "linear", function(){
+                    $("#car").supremate({"top": "+=70"}, 20, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
@@ -551,7 +570,7 @@ function animateCar(cell, displacedCells, dir){
                         "transform": "rotate(0deg)"
                     });
 
-                    $("#car").supremate({"left": "+=70"}, 15, "linear", function(){
+                    $("#car").supremate({"left": "+=70"}, 20, "linear", function(){
                         route.shift();
                         pauseAndRemove();
                         adjustRoute();
