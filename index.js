@@ -251,22 +251,22 @@ function addLocations(passengerID){
 
     if(passengerID == 1){
         //add the pick up image on the location.
-        pickup.append("<img class='participant' src='images/d" + passengerID +
+        pickup.append("<img class='p1' src='images/d" + passengerID +
         ".png' alt='Destination'><strong class= 'p1Tag locTag' >Your Pickup!</strong>");
 
         var dropoff = $(".grid div:nth-child(" + endLocation + ")");
-        dropoff.append("<img class='participant'src='images/d1.png' alt='Destination'>"+
+        dropoff.append("<img class='p1'src='images/d1.png' alt='Destination'>"+
         "<strong class= 'p1Tag locTag' >Your Dropoff!</strong>");
     }
     else if(passengerID == 2){
         //add the pick up image on the location.
-        pickup.append("<img class='destination' src='images/d2"+
-        ".png' alt='Destination'><strong class= 'locTag p2Tag' >Pick up Passenger 2</strong>");
+        pickup.append("<img class='pickup' src='images/d2"+
+        "p.png' alt='Destination'><strong class= 'locTag p2Tag pickupTag' >Pick up Passenger 2</strong>");
     }
     else{ //if(passengerID == 3)
         //add the pick up image on the location.
-        pickup.append("<img class='destination' src='images/d3"+
-        ".png' alt='Destination'><strong class= 'locTag p3Tag' >Pick up Passenger 3</strong>");
+        pickup.append("<img class='pickup' src='images/d3"+
+        "p.png' alt='Destination'><strong class= 'locTag p3Tag pickupTag' >Pick up Passenger 3</strong>");
     }
 }
 
@@ -293,11 +293,11 @@ function updateRoute(cell){
             //add the destination image to the screen along with the route.
             if(numStopsReached == 2){
                 var dropoff = $(".grid div:nth-child(" + d1 + ")");
-                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
+                dropoff.append("<img class='destination' src='images/d2d.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
             }
             else if(numStopsReached == 3){
                 var dropoff = $(".grid div:nth-child(" + d2 + ")");
-                dropoff.append("<img class='destination' src='images/d3.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
+                dropoff.append("<img class='destination' src='images/d3d.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
             }
         }
 
@@ -328,21 +328,21 @@ function updateRoute(cell){
         if(treatment == 2){
             if(numStopsReached == 2){
                 var dropoff = $(".grid div:nth-child(" + d1 + ")");
-                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
+                dropoff.append("<img class='destination' src='images/d2d.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
             }
             else if(numStopsReached == 4){
                 var dropoff = $(".grid div:nth-child(" + d2 + ")");
-                dropoff.append("<img class='destination' src='images/d3.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
+                dropoff.append("<img class='destination' src='images/d3d.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
             }
         }
         else{ //treatment 3
             if(numStopsReached == 3){
                 var dropoff = $(".grid div:nth-child(" + d2 + ")");
-                dropoff.append("<img class='destination' src='images/d3.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
+                dropoff.append("<img class='destination' src='images/d3d.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
             }
             else if(numStopsReached == 4){
                 var dropoff = $(".grid div:nth-child(" + d1 + ")");
-                dropoff.append("<img class='destination' src='images/d2.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
+                dropoff.append("<img class='destination' src='images/d2d.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
             }
         }
 
@@ -425,24 +425,22 @@ function animateCar(cell, displacedCells, dir){
             }
 
             //removes previous destination.
-            let children = $(".grid div:nth-child(" + cell + ")").children();
-            var i = dir == "down" ? 1 : 0;
-            for(i ; i < children.length; i++){
-                children[i].remove();
-            }
+            // let children = $(".grid div:nth-child(" + cell + ")").children();
+            // var i = dir == "down" ? 1 : 0;
+            // for(i ; i < children.length; i++){
+            //     children[i].remove();
+            // }
 
             //change the image to have passengers in car.
-            //car0 == numStops = 1, 3, 5
-            //car1 == numStops = 2
             if(treatment == 2){
                 if(numStopsReached == 1 || numStopsReached == 3 || numStopsReached == 5){
-                    document.getElementById("car").src = 'images/car0.png';
-                }
-                else if(numStopsReached == 2){
                     document.getElementById("car").src = 'images/car1.png';
                 }
-                else if(numStopsReached == 4){
+                else if(numStopsReached == 2){
                     document.getElementById("car").src = 'images/car2.png';
+                }
+                else if(numStopsReached == 4){
+                    document.getElementById("car").src = 'images/car3.png';
                 }
                 else{ //last stop 6 i.e car only has driver
                     document.getElementById("car").src = 'images/car.png';
@@ -450,13 +448,13 @@ function animateCar(cell, displacedCells, dir){
             }
             if(treatment == 3){
                 if(numStopsReached == 1 || numStopsReached == 5){
-                    document.getElementById("car").src = 'images/car0.png';
-                }
-                else if(numStopsReached == 2 || numStopsReached == 4){
                     document.getElementById("car").src = 'images/car1.png';
                 }
+                else if(numStopsReached == 2 || numStopsReached == 4){
+                    document.getElementById("car").src = 'images/car2.png';
+                }
                 else if(numStopsReached == 3){
-                    document.getElementById("car").src = 'images/car3.png';
+                    document.getElementById("car").src = 'images/car4.png';
                 }
                 else{ //last stop 6
                     document.getElementById("car").src = 'images/car.png';

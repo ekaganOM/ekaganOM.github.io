@@ -21,12 +21,12 @@ body {
 
 #car {
     height: 50px;
-    width: 85px;
+    width: 88px;
     top: 45px;
     position: relative;
     z-index: 4;
 }
-
+/* the horizontal route */
 .majorRoute {
     height: 7px;
     position: relative;
@@ -37,7 +37,7 @@ body {
     bottom: 7px;
     opacity: 0.9;
 }
-
+/* the road for up/down */
 .minorRoute {
     height: 30px;
     width: 16px;
@@ -51,8 +51,8 @@ body {
     border: none !important;
     display: none;
 }
-
-.destination {
+/* pickup circle images */
+.pickup {
     height: 20px;
     width: 20px;
     margin-top: 60px;
@@ -60,8 +60,17 @@ body {
     z-index: 1;
     position: relative;
 }
+/* destination flag imgs */
+.destination {
+    height: 45px;
+    width: 50px;
+    margin-top: 55px;
+    margin-left: 20px;
+    z-index: 1;
+    position: relative;
+}
 
-.participant {
+.p1 {
     height: 45px;
     width: 50px;
     z-index: 1;
@@ -69,7 +78,7 @@ body {
     text-align:center;
     margin-top: 15px;
 }
-
+/* the description tag of location imgs */
 .locTag {
     border: none !important;
     position: relative;
@@ -89,6 +98,10 @@ body {
 
 .p3Tag {
     color: #007F00;
+}
+/* placing the tag above the pickup img for p2, p3 */
+.pickupTag {
+    bottom: 65px;
 }
 
 
