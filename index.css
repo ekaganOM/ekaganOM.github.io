@@ -51,7 +51,23 @@ body {
     border: none !important;
     display: none;
 }
-/* pickup circle images */
+/* circle img for p1 */
+.p1pick {
+    width: 20px;
+    margin-top: 40px;
+    left: 165px;
+    z-index: 1;
+    position: absolute;
+}
+/* flag img for p1 */
+.p1dest {
+    height: 45px;
+    width: 50px;
+    z-index: 1;
+    position: absolute;
+    margin-top: 15px;
+}
+/* pickup circle images for p2, p3*/
 .pickup {
     height: 20px;
     width: 20px;
@@ -60,7 +76,7 @@ body {
     z-index: 1;
     position: relative;
 }
-/* destination flag imgs */
+/* destination flag imgs for p2, p3*/
 .destination {
     height: 45px;
     width: 50px;
@@ -70,21 +86,11 @@ body {
     position: relative;
 }
 
-.p1 {
-    height: 45px;
-    width: 50px;
-    z-index: 1;
-    position: absolute;
-    text-align:center;
-    margin-top: 15px;
-}
 /* the description tag of location imgs */
 .locTag {
-    border: none !important;
     position: relative;
     font-size: smaller;
     z-index: 3;
-    color: black;
 }
 
 .p1Tag {
@@ -125,4 +131,5 @@ body {
 #attribution {
     position: fixed;
     bottom: 0;
+    font-size: 10px;
 }

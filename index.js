@@ -251,22 +251,22 @@ function addLocations(passengerID){
 
     if(passengerID == 1){
         //add the pick up image on the location.
-        pickup.append("<img class='p1' src='images/d" + passengerID +
-        ".png' alt='Destination'><strong class= 'p1Tag locTag' >Your Pickup!</strong>");
+        pickup.append("<img class='p1pick' src='images/d1p.png'"+
+        "alt='Destination'><strong class= 'locTag p1Tag'> Your Pickup !</strong>");
 
         var dropoff = $(".grid div:nth-child(" + endLocation + ")");
-        dropoff.append("<img class='p1'src='images/d1.png' alt='Destination'>"+
-        "<strong class= 'p1Tag locTag' >Your Dropoff!</strong>");
+        dropoff.append("<img class='p1dest'src='images/d1d.png' alt='Destination'>"+
+        "<strong class= 'p1Tag locTag' >Your Dropoff !</strong>");
     }
     else if(passengerID == 2){
         //add the pick up image on the location.
-        pickup.append("<img class='pickup' src='images/d2"+
-        "p.png' alt='Destination'><strong class= 'locTag p2Tag pickupTag' >Pick up Passenger 2</strong>");
+        pickup.append("<img class='pickup' src='images/d2p.png'"+
+        "alt='Destination'><strong class= 'locTag p2Tag pickupTag' >Pick up Passenger 2</strong>");
     }
     else{ //if(passengerID == 3)
         //add the pick up image on the location.
-        pickup.append("<img class='pickup' src='images/d3"+
-        "p.png' alt='Destination'><strong class= 'locTag p3Tag pickupTag' >Pick up Passenger 3</strong>");
+        pickup.append("<img class='pickup' src='images/d3p.png' "+
+        "alt='Destination'><strong class= 'locTag p3Tag pickupTag' >Pick up Passenger 3</strong>");
     }
 }
 
