@@ -10,8 +10,10 @@ let gridSize = 70;
 let width = Math.floor($(window).width()/gridSize);
 let height = Math.floor($(window).height()/gridSize);
 
-//previous timer instance
-let timerInstance;
+//previous timer instances
+let timerInstance1;
+let timerInstance2;
+let timerInstance3;
 
 //ROW RANGE CALCULATIONS
 //rowRange divides the screen into 3 parts and uses the middle part only
@@ -92,35 +94,88 @@ function addToScreen() {
 }
 
 //timer
-function updateTimer(duration) {
-    var display = display = document.querySelector('#time');
+function updateTimer(duration, passengerID) {
+    if (passengerID > 1) {
+        countDown(passengerID);
+    }
+
+    var display = document.querySelector('#timeP' + passengerID);
     var timer = duration, minutes, seconds;
 
-    clearInterval(timerInstance);
-    timerInstance = setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+    if (passengerID === 1) {
+        clearInterval(timerInstance1);
+        timerInstance1 = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
 
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        display.textContent = minutes + ":" + seconds;
+            display.textContent = minutes + ":" + seconds;
 
-        if (--timer < 0) {
-            timer = 0;
+            if (--timer < 0) {
+                timer = 10;
+            }
+        }, 1000);
+    }
+    else if (passengerID === 2) {
+        clearInterval(timerInstance2);
+        timerInstance2 = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                timer = 10;
+            }
+        }, 1000);
+        updateTimer(duration + 23, 1);
+    }
+    else if (passengerID === 3) {
+        clearInterval(timerInstance3);
+        timerInstance3 = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                timer = 10;
+            }
+        }, 1000);
+
+        if(treatment == 2){
+            updateTimer(duration + 23, 1);
         }
-    }, 1000);
-
+        else if(treatment == 3){
+            updateTimer(duration + 23, 2);
+        }
+    }
 }
 
 //displays start time from 1 minute and updates the timer.
-function countDown() {
+function countDown(passengerID) {
     //start the timer from 1 minutes
     let countDown = 1;
     let countdownText = countDown + ":00"
-    document.getElementById("time").innerHTML = countdownText;
+    let passengerTimer = document.getElementById("timeBoardP" + passengerID);
+    passengerTimer.style.display = "block";
+
+    let passengerTime = document.getElementById("timeP" + passengerID);
+    passengerTime.innerHTML = countdownText;
+
     var numSeconds = 60 * countDown - 1;
-    updateTimer(numSeconds);
+
+    if (passengerID === 1) {
+        updateTimer(numSeconds, passengerID);
+    }
 }
 
 //creates locations for passengers
@@ -206,12 +261,12 @@ function addLocations(passengerID){
     var pickup;
     if(passengerID > 1){
         setTimeout(function (){
-            let newDuration = parseInt(document.getElementById("time").innerHTML.split(":")[0]) * 60 +
-            parseInt(document.getElementById("time").innerHTML.split(":")[1]) + 23;
-            updateTimer(newDuration);
+            let newDuration = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[0]) * 60 +
+            parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[1]) + 23;
+            updateTimer(newDuration, passengerID);
 
-            let minutes = parseInt(document.getElementById("time").innerHTML.split(":")[0] / 60, 10);
-            let seconds = parseInt(document.getElementById("time").innerHTML.split(":")[1] % 60, 10) + 23
+            let minutes = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[0] / 60, 10);
+            let seconds = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[1] % 60, 10) + 23 + 23;
 
             while(seconds >= 60) {
                 seconds %= 60;
@@ -404,7 +459,7 @@ function animateCar(cell, displacedCells, dir){
                 let timeAtOpen, timeAtClose;
                 Swal.fire({
                     title: "Alert!",
-                    text: "Passenger 1, your driver has arrived. You will arrive in " + document.getElementById("time").innerHTML,
+                    text: "Passenger 1, your driver has arrived. You will arrive in " + document.getElementById("timeP1").innerHTML,
                     type: "info",
                     allowOutsideClick: false,
                     allowEscapeKey: false,
@@ -445,6 +500,20 @@ function animateCar(cell, displacedCells, dir){
                 else{ //last stop 6 i.e car only has driver
                     document.getElementById("car").src = 'images/car.png';
                 }
+
+                //update timers
+                if(numStopsReached == 3){
+                    clearInterval(timerInstance2);
+                    document.getElementById("timeBoardP2").style.display = "none";
+                }
+                else if(numStopsReached == 5){
+                    clearInterval(timerInstance3);
+                    document.getElementById("timeBoardP3").style.display = "none";
+                }
+                else if(numStopsReached == 6){
+                    clearInterval(timerInstance1);
+                    document.getElementById("timeBoardP1").style.display = "none";
+                }
             }
             if(treatment == 3){
                 if(numStopsReached == 1 || numStopsReached == 5){
@@ -456,8 +525,22 @@ function animateCar(cell, displacedCells, dir){
                 else if(numStopsReached == 3){
                     document.getElementById("car").src = 'images/car4.png';
                 }
-                else{ //last stop 6
+                else{ //last stop 6 i.e car only has driver
                     document.getElementById("car").src = 'images/car.png';
+                }
+
+                //update timers
+                if(numStopsReached == 4){
+                    clearInterval(timerInstance3);
+                    document.getElementById("timeBoardP3").style.display = "none";
+                }
+                else if(numStopsReached == 5){
+                    clearInterval(timerInstance2);
+                    document.getElementById("timeBoardP2").style.display = "none";
+                }
+                else if(numStopsReached == 6){
+                    clearInterval(timerInstance1);
+                    document.getElementById("timeBoardP1").style.display = "none";
                 }
             }
 
@@ -620,11 +703,11 @@ function userRating() {
 
 //execution starts here
 ratingInterval = setInterval(function(){
-    userRating();
+    // userRating();
 }, 30000);
 
 createGrid();
 addToScreen();
 getLocations();
-countDown();
+countDown(1);
 updateRoute(orderOfLocations[columnIndex[0]]);

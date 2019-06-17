@@ -110,8 +110,6 @@ body {
     bottom: 65px;
 }
 
-
-
 .timer {
     position: absolute;
     background-color: black;
@@ -132,4 +130,20 @@ body {
     position: fixed;
     bottom: 0;
     font-size: 10px;
+}
+
+#timeBoard {
+    /* TODO */
+}
+
+#timeBoardP1 {
+    display: none;
+}
+
+#timeBoardP2 {
+    display: none;
+}
+
+#timeBoardP3 {
+    display: none;
 }
