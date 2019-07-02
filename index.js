@@ -438,7 +438,7 @@ function updateRoute(cell){
 
 //animate car includes:
 //pauseAndRemove - pauses the car at destinations,
-//                 removes the destination image when visited,
+//                 removes the destination image when visited, -- COMMENTED OUT
 //                 changes the images of the car according to the passengers in it
 //adjustRoute - rotates and moves the car up/down. Recursively calls itself to work through the route.
 function animateCar(cell, displacedCells, dir){
@@ -456,6 +456,7 @@ function animateCar(cell, displacedCells, dir){
 
             //Participant is picked up
             if(numStopsReached == 1){
+                countDown(1);
                 let timeAtOpen, timeAtClose;
                 Swal.fire({
                     title: "Alert!",
@@ -490,6 +491,7 @@ function animateCar(cell, displacedCells, dir){
             if(treatment == 2){
                 if(numStopsReached == 1 || numStopsReached == 3 || numStopsReached == 5){
                     document.getElementById("car").src = 'images/car1.png';
+
                 }
                 else if(numStopsReached == 2){
                     document.getElementById("car").src = 'images/car2.png';
@@ -501,18 +503,29 @@ function animateCar(cell, displacedCells, dir){
                     document.getElementById("car").src = 'images/car.png';
                 }
 
-                //update timers
+                //ADD CALL TO ADD TIMER FOR P2
+                if(numStopsReached == 2){
+                    //updateTimer ????
+                    // let newDuration = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[0]) * 60 +
+                    // parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[1]) + 23;
+                    // updateTimer(newDuration, passengerID);
+                }
+
+                //update timers to remove them from screen once their destination is reached.
                 if(numStopsReached == 3){
                     clearInterval(timerInstance2);
                     document.getElementById("timeBoardP2").style.display = "none";
+                    document.getElementById("timeP2").style.display = "none";
                 }
                 else if(numStopsReached == 5){
                     clearInterval(timerInstance3);
                     document.getElementById("timeBoardP3").style.display = "none";
+                    document.getElementById("timeP3").style.display = "none";
                 }
                 else if(numStopsReached == 6){
                     clearInterval(timerInstance1);
                     document.getElementById("timeBoardP1").style.display = "none";
+                    document.getElementById("timeP1").style.display = "none";
                 }
             }
             if(treatment == 3){
@@ -533,14 +546,17 @@ function animateCar(cell, displacedCells, dir){
                 if(numStopsReached == 4){
                     clearInterval(timerInstance3);
                     document.getElementById("timeBoardP3").style.display = "none";
+                    document.getElementById("timeP3").style.display = "none";
                 }
                 else if(numStopsReached == 5){
                     clearInterval(timerInstance2);
                     document.getElementById("timeBoardP2").style.display = "none";
+                    document.getElementById("timeP2").style.display = "none"
                 }
                 else if(numStopsReached == 6){
                     clearInterval(timerInstance1);
                     document.getElementById("timeBoardP1").style.display = "none";
+                    document.getElementById("timeP1").style.display = "none";
                 }
             }
 
@@ -701,7 +717,7 @@ function userRating() {
     });
 }
 
-//execution starts here
+//EXECUTION FROM HERE:
 ratingInterval = setInterval(function(){
     // userRating();
 }, 30000);
@@ -709,5 +725,5 @@ ratingInterval = setInterval(function(){
 createGrid();
 addToScreen();
 getLocations();
-countDown(1);
+// countDown(1);
 updateRoute(orderOfLocations[columnIndex[0]]);
