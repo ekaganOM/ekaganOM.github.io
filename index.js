@@ -133,7 +133,6 @@ function updateTimer(duration, passengerID) {
                 timer = 10;
             }
         }, 1000);
-        updateTimer(duration + 23, 1);
     }
     else if (passengerID === 3) {
         clearInterval(timerInstance3);
@@ -150,21 +149,21 @@ function updateTimer(duration, passengerID) {
                 timer = 10;
             }
         }, 1000);
-
-        if(treatment == 2){
-            updateTimer(duration + 23, 1);
-        }
-        else if(treatment == 3){
-            updateTimer(duration + 23, 2);
-        }
     }
 }
 
 //displays start time from 1 minute and updates the timer.
 function countDown(passengerID) {
     //start the timer from 1 minutes
-    let countDown = 1;
-    let countdownText = countDown + ":00"
+    let countDown, countdownText;
+    if (passengerID == 1) {
+        countDown = 1;
+        countdownText = "01:00"
+    }
+    else {
+        countDown = 0;
+        countdownText = "00:30"
+    }
     let passengerTimer = document.getElementById("timeBoardP" + passengerID);
     passengerTimer.style.display = "block";
 
@@ -261,9 +260,9 @@ function addLocations(passengerID){
     var pickup;
     if(passengerID > 1){
         setTimeout(function (){
-            let newDuration = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[0]) * 60 +
-            parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[1]) + 23;
-            updateTimer(newDuration, passengerID);
+            let newDuration = parseInt(document.getElementById("timeP1").innerHTML.split(":")[0]) * 60 +
+            parseInt(document.getElementById("timeP1").innerHTML.split(":")[1]) + 23 + 23;
+            updateTimer(newDuration, 1);
 
             let minutes = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[0] / 60, 10);
             let seconds = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[1] % 60, 10) + 23 + 23;
@@ -506,9 +505,11 @@ function animateCar(cell, displacedCells, dir){
                 //ADD CALL TO ADD TIMER FOR P2
                 if(numStopsReached == 2){
                     //updateTimer ????
-                    // let newDuration = parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[0]) * 60 +
-                    // parseInt(document.getElementById("timeP" + (passengerID - 1)).innerHTML.split(":")[1]) + 23;
-                    // updateTimer(newDuration, passengerID);
+                    updateTimer(30, 2);
+                }
+                else if(numStopsReached == 4){
+                    //updateTimer ????
+                    updateTimer(30, 3);
                 }
 
                 //update timers to remove them from screen once their destination is reached.
@@ -719,7 +720,7 @@ function userRating() {
 
 //EXECUTION FROM HERE:
 ratingInterval = setInterval(function(){
-    // userRating();
+    userRating();
 }, 30000);
 
 createGrid();
