@@ -161,3 +161,15 @@ th {
 #timeBoardP3 {
     display: none;
 }
+
+#p1Time{
+    color: #BF0000;
+}
+
+#p2Time{
+    color:#0000BF;
+}
+
+#p3Time{
+    color:#007F00;
+}

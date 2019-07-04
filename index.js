@@ -504,29 +504,30 @@ function animateCar(cell, displacedCells, dir){
 
                 //ADD CALL TO ADD TIMER FOR P2
                 if(numStopsReached == 2){
-                    //updateTimer ????
                     updateTimer(30, 2);
                 }
                 else if(numStopsReached == 4){
-                    //updateTimer ????
                     updateTimer(30, 3);
                 }
 
                 //update timers to remove them from screen once their destination is reached.
                 if(numStopsReached == 3){
                     clearInterval(timerInstance2);
-                    document.getElementById("timeBoardP2").style.display = "none";
-                    document.getElementById("timeP2").style.display = "none";
+                    // document.getElementById("timeBoardP2").style.display = "none";
+                    // document.getElementById("timeP2").style.display = "none";
+                    document.getElementById("p2Time").style.display = "none";
                 }
                 else if(numStopsReached == 5){
                     clearInterval(timerInstance3);
-                    document.getElementById("timeBoardP3").style.display = "none";
-                    document.getElementById("timeP3").style.display = "none";
+                    // document.getElementById("timeBoardP3").style.display = "none";
+                    // document.getElementById("timeP3").style.display = "none";
+                    document.getElementById("p3Time").style.display = "none";
                 }
                 else if(numStopsReached == 6){
                     clearInterval(timerInstance1);
-                    document.getElementById("timeBoardP1").style.display = "none";
-                    document.getElementById("timeP1").style.display = "none";
+                    // document.getElementById("timeBoardP1").style.display = "none";
+                    // document.getElementById("timeP1").style.display = "none";
+                    document.getElementById("p1Time").style.display = "none";
                 }
             }
             if(treatment == 3){
