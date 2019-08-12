@@ -1,7 +1,5 @@
 //set the treatment number
-// Treatment 1: one additional passenger, drop off order: P1, P0
-// Treatment 2: two additional passengers, drop off order: P1, P2, P0
-// Treatment 3: two additional passengers, drop off order: P2, P1, P0
+// Treatment 2: drop off order: P2, P3, P1
 let treatment = 2;
 
 //sizeOfGrid
@@ -201,19 +199,8 @@ function getLocations(){
     var third = startLocation + (fifthWidth * 3) - (fifthHeight * width);
     var fourth = (startLocation + (fifthWidth * 4)) +  (fifthHeight * width);
 
-    //if treatment == 1, one additional passenger.
-    //if treatment == 2, P2 displayed after P1 droppff, on specific location.
-    if(treatment == 1){
-        p1 = first;
-        d1 = second;
-        p1Mod = p1 % width;
-        d1Mod = d1 % width;
-        orderOfLocations[p1Mod] = p1;
-        orderOfLocations[d1Mod] = d1;
-    }
-
     //p2 gets dropped off after p1
-    else if(treatment == 2){
+    if(treatment == 2){
         p1 = first;
         d1 = second;
         p2 = third;
@@ -229,25 +216,6 @@ function getLocations(){
         orderOfLocations[p2Mod] = p2;
         orderOfLocations[d2Mod] = d2;
     }
-
-    //p2 gets dropped off before p1
-    else if (treatment == 3){
-        p1 = first;
-        p2 = second;
-        d2 = third;
-        d1 = fourth;
-
-        p1Mod = p1 % width;
-        d1Mod = d1 % width;
-        p2Mod = p2 % width;
-        d2Mod = d2 % width;
-
-        orderOfLocations[p1Mod] = p1;
-        orderOfLocations[d1Mod] = d1;
-        orderOfLocations[p2Mod] = p2;
-        orderOfLocations[d2Mod] = d2;
-    }
-
     //go to the end location always
     orderOfLocations[width] = endLocation;
 
@@ -342,19 +310,6 @@ function updateRoute(cell){
     }
     // if location is above
     else if (carLocation > cell){
-        //because treatment 2 does not have drop off above the major route, we only need this order of
-        //appearance of dropoff for treatment 3
-        if(treatment == 3){
-            //add the destination image to the screen along with the route.
-            if(numStopsReached == 2){
-                var dropoff = $(".grid div:nth-child(" + d1 + ")");
-                dropoff.append("<img class='destination' src='images/d2d.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
-            }
-            else if(numStopsReached == 3){
-                var dropoff = $(".grid div:nth-child(" + d2 + ")");
-                dropoff.append("<img class='destination' src='images/d3d.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
-            }
-        }
 
         //direction is changed to "up" for animate to remove visited location
         direction = "up";
@@ -390,17 +345,6 @@ function updateRoute(cell){
                 dropoff.append("<img class='destination' src='images/d3d.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
             }
         }
-        else{ //treatment 3
-            if(numStopsReached == 3){
-                var dropoff = $(".grid div:nth-child(" + d2 + ")");
-                dropoff.append("<img class='destination' src='images/d3d.png' alt='Destination'><strong class= 'locTag p3Tag' >Drop off Passenger 3</strong>");
-            }
-            else if(numStopsReached == 4){
-                var dropoff = $(".grid div:nth-child(" + d1 + ")");
-                dropoff.append("<img class='destination' src='images/d2d.png' alt='Destination'><strong class= 'locTag p2Tag' >Drop off Passenger 2</strong>");
-            }
-        }
-
         //direction is changed to "down" for animate to remove visited location
         direction = "down";
         //gets to the same column
@@ -514,60 +458,22 @@ function animateCar(cell, displacedCells, dir){
                 //update timers to remove them from screen once their destination is reached.
                 // if(numStopsReached == 3){
                 //     clearInterval(timerInstance2);
-                //     // document.getElementById("timeBoardP2").style.display = "none";
-                //     // document.getElementById("timeP2").style.display = "none";
                 //     document.getElementById("p2Time").style.display = "none";
                 // }
                 // else if(numStopsReached == 5){
                 //     clearInterval(timerInstance3);
-                //     // document.getElementById("timeBoardP3").style.display = "none";
-                //     // document.getElementById("timeP3").style.display = "none";
                 //     document.getElementById("p3Time").style.display = "none";
                 // }
                 // else if(numStopsReached == 6){
                 //     clearInterval(timerInstance1);
-                //     // document.getElementById("timeBoardP1").style.display = "none";
-                //     // document.getElementById("timeP1").style.display = "none";
                 //     document.getElementById("p1Time").style.display = "none";
                 // }
             }
-            // if(treatment == 3){
-            //     if(numStopsReached == 1 || numStopsReached == 5){
-            //         document.getElementById("car").src = 'images/car1.png';
-            //     }
-            //     else if(numStopsReached == 2 || numStopsReached == 4){
-            //         document.getElementById("car").src = 'images/car2.png';
-            //     }
-            //     else if(numStopsReached == 3){
-            //         document.getElementById("car").src = 'images/car4.png';
-            //     }
-            //     else{ //last stop 6 i.e car only has driver
-            //         document.getElementById("car").src = 'images/car.png';
-            //     }
 
-            //     //update timers
-            //     if(numStopsReached == 4){
-            //         clearInterval(timerInstance3);
-            //         document.getElementById("timeBoardP3").style.display = "none";
-            //         document.getElementById("timeP3").style.display = "none";
-            //     }
-            //     else if(numStopsReached == 5){
-            //         clearInterval(timerInstance2);
-            //         document.getElementById("timeBoardP2").style.display = "none";
-            //         document.getElementById("timeP2").style.display = "none"
-            //     }
-            //     else if(numStopsReached == 6){
-            //         clearInterval(timerInstance1);
-            //         document.getElementById("timeBoardP1").style.display = "none";
-            //         document.getElementById("timeP1").style.display = "none";
-            //     }
-            // }
+
 
             //add location of second passenger to the screen according to the treatment
             if(treatment == 2 && numStopsReached == 3){
-                addLocations(3);
-            }
-            else if(treatment == 3 && numStopsReached == 2){
                 addLocations(3);
             }
             if(numStopsReached == 6){
@@ -728,5 +634,4 @@ ratingInterval = setInterval(function(){
 createGrid();
 addToScreen();
 getLocations();
-// countDown(1);
 updateRoute(orderOfLocations[columnIndex[0]]);
