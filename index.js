@@ -1,4 +1,4 @@
-2//set the treatment number
+//set the treatment number
 // Treatment 1: one additional passenger, drop off order: P1, P0
 // Treatment 2: two additional passengers, drop off order: P1, P2, P0
 // Treatment 3: two additional passengers, drop off order: P2, P1, P0
@@ -112,9 +112,10 @@ function updateTimer(duration, passengerID) {
             seconds = seconds < 10 ? "0" + seconds : seconds;
 
             display.textContent = minutes + ":" + seconds;
-
+            //timer decreasing
             if (--timer < 0) {
-                timer = 10;
+                //if it reaches 00, keep it there.
+                timer = 00;
             }
         }, 1000);
     }
@@ -130,7 +131,7 @@ function updateTimer(duration, passengerID) {
             display.textContent = minutes + ":" + seconds;
 
             if (--timer < 0) {
-                timer = 10;
+                timer = 00;
             }
         }, 1000);
     }
@@ -146,7 +147,7 @@ function updateTimer(duration, passengerID) {
             display.textContent = minutes + ":" + seconds;
 
             if (--timer < 0) {
-                timer = 10;
+                timer = 00;
             }
         }, 1000);
     }
@@ -511,56 +512,56 @@ function animateCar(cell, displacedCells, dir){
                 }
 
                 //update timers to remove them from screen once their destination is reached.
-                if(numStopsReached == 3){
-                    clearInterval(timerInstance2);
-                    // document.getElementById("timeBoardP2").style.display = "none";
-                    // document.getElementById("timeP2").style.display = "none";
-                    document.getElementById("p2Time").style.display = "none";
-                }
-                else if(numStopsReached == 5){
-                    clearInterval(timerInstance3);
-                    // document.getElementById("timeBoardP3").style.display = "none";
-                    // document.getElementById("timeP3").style.display = "none";
-                    document.getElementById("p3Time").style.display = "none";
-                }
-                else if(numStopsReached == 6){
-                    clearInterval(timerInstance1);
-                    // document.getElementById("timeBoardP1").style.display = "none";
-                    // document.getElementById("timeP1").style.display = "none";
-                    document.getElementById("p1Time").style.display = "none";
-                }
+                // if(numStopsReached == 3){
+                //     clearInterval(timerInstance2);
+                //     // document.getElementById("timeBoardP2").style.display = "none";
+                //     // document.getElementById("timeP2").style.display = "none";
+                //     document.getElementById("p2Time").style.display = "none";
+                // }
+                // else if(numStopsReached == 5){
+                //     clearInterval(timerInstance3);
+                //     // document.getElementById("timeBoardP3").style.display = "none";
+                //     // document.getElementById("timeP3").style.display = "none";
+                //     document.getElementById("p3Time").style.display = "none";
+                // }
+                // else if(numStopsReached == 6){
+                //     clearInterval(timerInstance1);
+                //     // document.getElementById("timeBoardP1").style.display = "none";
+                //     // document.getElementById("timeP1").style.display = "none";
+                //     document.getElementById("p1Time").style.display = "none";
+                // }
             }
-            if(treatment == 3){
-                if(numStopsReached == 1 || numStopsReached == 5){
-                    document.getElementById("car").src = 'images/car1.png';
-                }
-                else if(numStopsReached == 2 || numStopsReached == 4){
-                    document.getElementById("car").src = 'images/car2.png';
-                }
-                else if(numStopsReached == 3){
-                    document.getElementById("car").src = 'images/car4.png';
-                }
-                else{ //last stop 6 i.e car only has driver
-                    document.getElementById("car").src = 'images/car.png';
-                }
+            // if(treatment == 3){
+            //     if(numStopsReached == 1 || numStopsReached == 5){
+            //         document.getElementById("car").src = 'images/car1.png';
+            //     }
+            //     else if(numStopsReached == 2 || numStopsReached == 4){
+            //         document.getElementById("car").src = 'images/car2.png';
+            //     }
+            //     else if(numStopsReached == 3){
+            //         document.getElementById("car").src = 'images/car4.png';
+            //     }
+            //     else{ //last stop 6 i.e car only has driver
+            //         document.getElementById("car").src = 'images/car.png';
+            //     }
 
-                //update timers
-                if(numStopsReached == 4){
-                    clearInterval(timerInstance3);
-                    document.getElementById("timeBoardP3").style.display = "none";
-                    document.getElementById("timeP3").style.display = "none";
-                }
-                else if(numStopsReached == 5){
-                    clearInterval(timerInstance2);
-                    document.getElementById("timeBoardP2").style.display = "none";
-                    document.getElementById("timeP2").style.display = "none"
-                }
-                else if(numStopsReached == 6){
-                    clearInterval(timerInstance1);
-                    document.getElementById("timeBoardP1").style.display = "none";
-                    document.getElementById("timeP1").style.display = "none";
-                }
-            }
+            //     //update timers
+            //     if(numStopsReached == 4){
+            //         clearInterval(timerInstance3);
+            //         document.getElementById("timeBoardP3").style.display = "none";
+            //         document.getElementById("timeP3").style.display = "none";
+            //     }
+            //     else if(numStopsReached == 5){
+            //         clearInterval(timerInstance2);
+            //         document.getElementById("timeBoardP2").style.display = "none";
+            //         document.getElementById("timeP2").style.display = "none"
+            //     }
+            //     else if(numStopsReached == 6){
+            //         clearInterval(timerInstance1);
+            //         document.getElementById("timeBoardP1").style.display = "none";
+            //         document.getElementById("timeP1").style.display = "none";
+            //     }
+            // }
 
             //add location of second passenger to the screen according to the treatment
             if(treatment == 2 && numStopsReached == 3){
