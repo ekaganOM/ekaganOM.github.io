@@ -1,6 +1,6 @@
 //set the treatment number
 // Treatment 2: drop off order: P2, P3, P1
-let treatment = 2;
+let treatment = 1;
 
 //sizeOfGrid
 let gridSize = 70;
