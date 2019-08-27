@@ -450,7 +450,7 @@ function animateCar(cell, displacedCells, dir){
                 setTimeout(function(){
                     //second passenger locations after 5 second delay
                     addLocations();
-                }, 15000);
+                }, 45000);
             }
 
             //removes previous destination.
@@ -554,7 +554,7 @@ function animateCar(cell, displacedCells, dir){
 
     //recursively calls itself to shift route
     function adjustRoute(){
-        let carSpeed = 8;
+        let carSpeed = 6;
         if(route.length > 0){
             var direction = route[0];
             switch(direction) {
@@ -570,7 +570,7 @@ function animateCar(cell, displacedCells, dir){
                         carSpeed = 50;
                     }
                     if(delayNotice == true){
-                        carSpeed = 3;
+                        carSpeed = 4;
                     }
                     $("#car").supremate({"left": "+=70"}, carSpeed, "linear", function(){
                             route.shift();
