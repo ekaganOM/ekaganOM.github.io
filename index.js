@@ -570,7 +570,7 @@ function animateCar(cell, displacedCells, dir){
                         carSpeed = 50;
                     }
                     if(delayNotice == true){
-                        carSpeed = 5;
+                        carSpeed = 3;
                     }
                     $("#car").supremate({"left": "+=70"}, carSpeed, "linear", function(){
                             route.shift();
